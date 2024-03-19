@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-center mb-4 mt-4">Métricas para diseño y programación</h1>
+<form action="/guardar" method="post" enctype=multipart/form-data>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="form-floating">
+                    <textarea class="form-control" placeholder="" id="textareacode" name="textareacode" style="height: 350px"></textarea>
+                    <label for="textareacode">Ingresa el código de una o varias clases de python para su análisis</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="mb-3 mt-2">
+                    <label for="classfile" class="form-label">o selecciona un archivo</label>
+                    <input class="form-control" type="file" id="classfile" name="classfile" accept=".py">
+                    </div>
+            </div>
+        </div>
+        <div class="row mt-2">
+            <div class="d-grid col-4 mx-auto">
+                <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    {% endblock %}
+</head>
+<body>
+    {% block navbar %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary pt-0">
+        <div class="container-fluid p-3 mb-2 bg-warning bg-opacity-75 shadow">
+            <a class="navbar-brand ps-3 fw-bold fs-2" href="/inicio">Inicio</a>
+            <img src="../static/img/logoLW.png" class="me-5" height="50px" width="50px">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item ps-2">
+                    <a class="nav-link active fs-3" aria-current="page" href="/LIM">Lim</a>
+                </li>
+                <li class="nav-item ps-2">
+                    <a class="nav-link active fs-3" href="/McCabe">McCabe</a>
+                </li>
+                <!-- li class="nav-item ps-2">
+                    <a class="nav-link active fs-3" href="#">McCabe</a>
+                </li -->
+            </ul>
+            </div>
+        </div>
+    </nav>
+    {% endblock %}
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+</body>
+</html>
