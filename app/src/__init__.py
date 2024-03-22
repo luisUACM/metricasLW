@@ -6,5 +6,5 @@ def init_app():
     app.secret_key = '123456'
 
     with app.app_context():
-        from . import routes
+        from . import routes, routes_l, routes_w
         return app
