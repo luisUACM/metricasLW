@@ -1,3 +1,4 @@
 /venv
 /app/src/__pycache__
 /app/src/uploads/__pycache__
+/app/src/uploads/ClaseCarro.py
