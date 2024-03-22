@@ -1,5 +1,5 @@
 from flask import current_app as app
-from flask import render_template, redirect
+from flask import render_template, redirect, flash
 from flask import request
 from .graficador import crear_grafica_test, networkx_to_figure
 import re, py_compile
@@ -31,19 +31,19 @@ def guardar():
         if re.match('^.*\.py$', file.filename) != None:
             file.save(RUTA_ARCHIVO)
         else:
-            #TODO alerta no es achivo .py
+            flash('El archivo seleccionado no es un archivo de python', category='error')
             return redirect('/inicio')
     elif code != '':
         file = open(RUTA_ARCHIVO, 'w')
         file.write(code)
         file.close()
     else:
-        #TODO alerta introducir algo
+        flash('Por favor introduzca el código de python', category='info')
         return redirect('/inicio')
     try:
         py_compile.compile(RUTA_ARCHIVO, doraise=True)
     except:
-        #TODO alerta error de sintaxis
+        flash('El código de python contiene errores', category='error')
         return redirect('/inicio')
     return redirect('/LIM')
 
