@@ -6,5 +6,12 @@ def init_app():
     app.secret_key = '123456'
 
     with app.app_context():
-        from . import routes, routes_l, routes_w
+        #  =========================================================
+        #   
+        #   Aquí importar todos los archivos que usen el objeto app
+        #   
+        #  =========================================================
+
+        from .routes import routes, routes_luis, routes_wendy
+        
         return app

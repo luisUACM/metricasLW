@@ -1,7 +1,7 @@
 from flask import current_app as app
 from flask import render_template, redirect, flash
 from flask import request
-from .graficador_grafos import crear_grafica_test, networkx_to_figure
+from ..utils.graficadores.graficador_grafos import crear_grafica_test, networkx_to_figure
 import re, py_compile
 
 RUTA_ARCHIVO = 'src/uploads/Clases.py'

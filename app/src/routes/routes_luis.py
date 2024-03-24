@@ -1,6 +1,6 @@
 from flask import current_app as app
 from flask import render_template
-from .graficador_grafos import crear_grafo_lcom, networkx_to_figure
+from ..utils.graficadores.graficador_grafos import crear_grafo_lcom, networkx_to_figure
 import ast
 
 RUTA_ARCHIVO = 'src/uploads/Clases.py'
