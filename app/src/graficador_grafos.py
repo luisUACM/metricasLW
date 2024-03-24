@@ -1,7 +1,13 @@
 import networkx as nx
 import plotly.graph_objects as go
+import ast
+from .calculadora_lcom4 import crear_matriz_adyacencia
 
-def crear_grafica_test():
+
+def crear_grafica_test() -> nx.Graph:
+    """
+    Regresa: Una gráfica de prueba networkx
+    """
     grafica = nx.Graph()
 
     grafica.add_node('A')
@@ -16,11 +22,32 @@ def crear_grafica_test():
     nx.set_node_attributes(grafica, pos, 'pos')
     return grafica
 
-"""
-Parametros: Una grafica de redes de networkx
-Regresa: La misma grafica pero hecha figura de plotly
-"""
-def networkx_to_figure(grafica: nx.Graph):
+
+def crear_grafo_lcom(clase: ast.ClassDef) -> tuple[str, nx.Graph, int]:
+    """
+    Parametros: La clase de la que se quiere graficar LCOM4
+    Regresa: Un tupla de la forma (nombre_clase, grafica_networkx, valor_lcom)
+    """
+    matriz, nombres = crear_matriz_adyacencia(clase)
+    grafica: nx.Graph = nx.from_numpy_array(matriz)
+    dict_nombres = dict()
+
+    i = 0
+    for n in nombres:
+        dict_nombres[i] = n
+        i += 1
+    grafica = nx.relabel_nodes(grafica, dict_nombres)
+
+    lcom = nx.number_connected_components(grafica) # LCOM value
+    pos = nx.spring_layout(grafica)
+    nx.set_node_attributes(grafica, pos, 'pos')
+    return (clase.name, grafica, lcom)
+
+def networkx_to_figure(grafica: nx.Graph, titulo: str = None) -> go.Figure:
+    """
+    Parametros: Una grafica de redes de networkx, titulo y pie de foto
+    Regresa: La misma grafica pero hecha figura de plotly
+    """
     edge_x = []
     edge_y = []
     node_x = []
@@ -53,7 +80,10 @@ def networkx_to_figure(grafica: nx.Graph):
         showlegend=False,
         hovermode='closest',
         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False), 
+        margin=dict(l=0, r=0, t=0, b=0)
     )
     fig = go.Figure(data=[edge_trace, node_trace], layout=layout)
+    if titulo != None:
+        fig.update_layout(dict(text = titulo))
     return fig

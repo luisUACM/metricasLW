@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+{% for g in graficas %}
+    <h1>{{ g.0 }}</h1>
+    {{ g.1 | safe }}
+    <p>{{ g.2 }}</p>
+{% endfor %}
+{% endblock %}
