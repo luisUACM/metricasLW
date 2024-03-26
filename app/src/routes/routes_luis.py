@@ -17,4 +17,4 @@ def lcom():
         n, g, v = crear_grafo_lcom(c)
         fig = networkx_to_figure(g)
         graficas.append((n, fig.to_html(full_html = False), v))
-    return render_template('lcom4.html', title='LCOM 4', graficas = graficas)
+    return render_template('lcom4.html', title='LCOM 4', graficas = graficas, title_long = 'Lack of Cohesion of Methods 4')

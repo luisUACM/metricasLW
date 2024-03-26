@@ -39,7 +39,7 @@ def crear_grafo_lcom(clase: ast.ClassDef) -> tuple[str, nx.Graph, int]:
     grafica = nx.relabel_nodes(grafica, dict_nombres)
 
     lcom = nx.number_connected_components(grafica) # LCOM value
-    pos = nx.spring_layout(grafica)
+    pos = nx.spring_layout(grafica, iterations=25, k= 0.4)
     nx.set_node_attributes(grafica, pos, 'pos')
     return (clase.name, grafica, lcom)
 
@@ -60,7 +60,7 @@ def networkx_to_figure(grafica: nx.Graph, titulo: str = None) -> go.Figure:
         edge_y.extend([y0, y1, None])
     edge_trace = go.Scatter(
         x=edge_x, y=edge_y,
-        line=dict(width=0.5, color='#888'),
+        line=dict(width=2, color='#000'),
         hoverinfo='none',
         mode='lines')
     
@@ -74,7 +74,7 @@ def networkx_to_figure(grafica: nx.Graph, titulo: str = None) -> go.Figure:
         text = list(grafica.nodes()),
         textposition='bottom center',
         hoverinfo='text',
-        marker=dict(size=30, color='skyblue', line_width=2))
+        marker=dict(size=30, color='skyblue', line_width=1.5))
     
     layout = go.Layout(
         showlegend=False,

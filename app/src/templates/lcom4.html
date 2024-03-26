@@ -1,8 +1,32 @@
 {% extends "base.html" %}
+
+{% block style %}
+<link href="../static/css/lcom4.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
 {% block content %}
-{% for g in graficas %}
-    <h1>{{ g.0 }}</h1>
-    {{ g.1 | safe }}
-    <p>{{ g.2 }}</p>
+<h1 class="text-center mb-4 mt-4 floating pulse">{{ title_long }}</h1>
+<div class="container">
+{% for fila in graficas | batch(2) %}
+    <div class="row gx-4">
+        {% for g in fila %}
+        <div class="col gy-4">
+            <div class="card text-center ps-0 pe-0">
+                <div class="card-header fs-2 fw-semibold">
+                    {{ g.0 }}
+                </div>
+                <div class="card-body overflow-hidden">
+                    {{ g.1 | safe }}
+                </div>
+                <div class="card-footer text-body-secondary">
+                    <span class="fw-bold">LCOM4</span>
+                    = {{ g.2 }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 {% endfor %}
+</div>
+<br/>
 {% endblock %}
