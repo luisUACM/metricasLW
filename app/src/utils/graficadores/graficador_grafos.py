@@ -1,7 +1,7 @@
 import networkx as nx
 import plotly.graph_objects as go
 import ast
-from ..calculadoras.calculadora_lcom4 import crear_matriz_adyacencia
+from ..metricas.lcom4 import crear_matriz_adyacencia
 
 
 def crear_grafica_test() -> nx.Graph:
