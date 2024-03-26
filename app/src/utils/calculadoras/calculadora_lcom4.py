@@ -1,4 +1,4 @@
-import ast, numpy as np
+import re, ast, numpy as np
 
 def crear_matriz_adyacencia(clase: ast.ClassDef) -> tuple[np.array, list[str]]:
     """
@@ -14,7 +14,7 @@ def crear_matriz_adyacencia(clase: ast.ClassDef) -> tuple[np.array, list[str]]:
     i_atributos = 0
 
     #Contar y agregar métodos
-    eliminar_metodos_acceso(metodos)    #TODO
+    metodo_innit = eliminar_metodos_acceso(metodos)
     for m in metodos:
         nodos.append(m)
         nombres_nodos.append(m.name + '()')
@@ -22,14 +22,11 @@ def crear_matriz_adyacencia(clase: ast.ClassDef) -> tuple[np.array, list[str]]:
     i_atributos = i
     
     #Contar y agregar atributos
-    agregar_asignaciones_metodos(asignaciones, metodos)      #TODO
-    for a in asignaciones:
-        atributos = get_variables_asignacion(a)
-        for attr in atributos:
-            nodos.append(attr)
-            nombres_nodos.append(attr)
-            i += 1
-        atributos = []
+    atributos = get_all_atributos(asignaciones, metodos, init = metodo_innit)
+    for attr in atributos:
+        nodos.append(attr)
+        nombres_nodos.append(attr)
+        i += 1
     matriz_adjacencia = np.zeros((i,i))
 
     #Procesar métodos
@@ -47,11 +44,75 @@ def crear_matriz_adyacencia(clase: ast.ClassDef) -> tuple[np.array, list[str]]:
                 matriz_adjacencia[fila][col] = 1
     return (matriz_adjacencia, nombres_nodos)
 
-def eliminar_metodos_acceso(l:list):
-    pass
+def get_all_atributos(asignaciones:list, metodos: list, init: ast.FunctionDef = None) -> list:
+    """
+    Parámetros: 
+    asignaciones -> lista de objetos ast.Assgin y ast.AnnAssign con los atributos declarados fuera de métodos
+    metodos -> lista de métodos de la clase
+    init -> método constructor de la clase (Opcional)
+    Regresa: 
+    Una lista con todos los atributos de una clase
+    """
+    lista_atributos = []
+    lista_nuevos_atributos = []
+    visitante = VisitanteNodos()
+    repetido = False
+    for a in asignaciones:
+        lista = get_variables_asignacion(a)
+        for l in lista:
+            lista_atributos.append(l)
 
-def agregar_asignaciones_metodos(l:list, l2: list):
-    pass
+    if init != None:
+        metodos.append(init)
+    for m in metodos:
+        visitante.visit(m)
+        lista_nuevos_atributos = visitante.get_self_accesos()
+        for a in lista_nuevos_atributos:
+            if isinstance(a, ast.Attribute):
+                if isinstance(a.value, ast.Name):
+                    if a.value.id == 'self':
+
+                        for m2 in metodos:
+                            if isinstance (m2, ast.FunctionDef):
+                                if m2.name == a.attr:
+                                    repetido = True
+                                    break
+                        for a2 in lista_atributos:
+                           
+                            if a2 == a.attr:
+                                repetido = True
+                                break
+                        if not repetido:
+                            lista_atributos.append(a.attr)
+            repetido = False
+    if init != None:
+        metodos.remove(init)
+    return lista_atributos
+
+def eliminar_metodos_acceso(metodos: list) -> ast.FunctionDef:
+    """
+    Parámetros: La lista de todos los métodos de una clase
+    Se eliminarán todos loss métodos getters, setters junto con el método __init_
+    """
+    lista_borrar = []
+    for m in metodos:
+        if isinstance(m, ast.FunctionDef):
+            if m.name == '__init__':
+                metodo_init = m
+                lista_borrar.append(m)
+            elif re.match('^(get_.*|set_.*)', m.name):
+                lista_borrar.append(m)
+            else:
+                for d in m.decorator_list:
+                    if isinstance(d, ast.Name):
+                        if d.id == 'property':              #Getter
+                            lista_borrar.append(m)
+                    elif isinstance(d, ast.Attribute):
+                        if d.attr == 'setter':              #Setter
+                            lista_borrar.append(m)
+    for m in lista_borrar:
+        metodos.remove(m)
+    return metodo_init
 
 def adyacencia_nodos(f1: ast.FunctionDef, f2: ast.FunctionDef = None, v1: str = None) -> bool:
     """
@@ -81,6 +142,7 @@ class VisitanteNodos(ast.NodeVisitor):
     def __init__(self) -> None:
         self.lista_calls = []
         self.lista_accesos = []
+        self.lista_atributos = []
         super().__init__()
 
     def visit_Call(self,node):
@@ -101,6 +163,7 @@ class VisitanteNodos(ast.NodeVisitor):
     
     def visit_Attribute(self,node):
         self.lista_accesos.append(node)
+        self.lista_atributos.append(node)
         ast.NodeVisitor.generic_visit(self, node)
     
     def get_llamadas(self):
@@ -111,6 +174,11 @@ class VisitanteNodos(ast.NodeVisitor):
     def get_accesos(self):
         l = self.lista_accesos
         self.lista_accesos = []
+        return l
+    
+    def get_self_accesos(self):
+        l = self.lista_atributos
+        self.lista_atributos = []
         return l
 
 def busca_llamadas(lista_llamadas: list, funcion: ast.FunctionDef) -> bool:
@@ -164,17 +232,41 @@ def print_node(nodo: ast.AST):
     """
     print(ast.dump(ast.parse(nodo), indent=2))
 
-def get_variables_asignacion(nodo: ast.AST):
+def get_variables_asignacion(nodo: ast.AST, solo_self: bool = False):
     """
     Parámetros: Un nodo ast.Assign o ast.AnnAssign
     Regresa: Una lista con los nombres de las variables en la operación de asignación
     """
     nombres_variables = []
+    nombres_variables_self = []
+
     if isinstance(nodo, ast.Assign):
         for t in nodo.targets:
-            if isinstance(t, ast.Name):
+            if isinstance(t, ast.Name):                 #No self
                 nombres_variables.append(t.id)
+            elif isinstance(t, ast.Attribute):          #Self
+                if isinstance(t.value, ast.Name):
+                    if t.value.id == 'self':
+                        nombres_variables.append(t.attr)
+                        nombres_variables_self.append(t.attr)
     elif isinstance(nodo, ast.AnnAssign):
-        if isinstance(nodo.target, ast.Name):
-            nombres_variables.append(nodo.target.id) 
-    return nombres_variables
+        if isinstance(nodo.target, ast.Name):           #No self
+            nombres_variables.append(nodo.target.id)
+        elif isinstance(nodo.target, ast.Attribute):    #Self
+            if isinstance(nodo.target.value, ast.Name):
+                if nodo.target.value.id == 'self':
+                    nombres_variables.append(nodo.target.attr)
+                    nombres_variables_self.append(nodo.target.attr)
+    elif isinstance(nodo, ast.AugAssign):
+        if isinstance(nodo.target, ast.Name):           #No self
+            nombres_variables.append(nodo.target.id)
+        elif isinstance(nodo.target, ast.Attribute):      #Self
+            if isinstance(nodo.target.value, ast.Name):
+                if nodo.target.value.id == 'self':
+                    nombres_variables.append(nodo.target.attr)
+                    nombres_variables_self.append(nodo.target.attr)
+
+    if solo_self:
+        return nombres_variables_self
+    else:
+        return nombres_variables
