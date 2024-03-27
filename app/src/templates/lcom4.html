@@ -5,13 +5,16 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="text-center mb-4 mt-4 floating pulse">{{ title_long }}</h1>
 <div class="container">
 {% for fila in graficas | batch(2) %}
     <div class="row gx-4">
         {% for g in fila %}
         <div class="col gy-4">
-            <div class="card text-center ps-0 pe-0">
+            {% if g.2 > 1 %}
+            <div class="card text-center border-danger ps-0 pe-0">
+            {% else %}
+            <div class="card text-center border-success ps-0 pe-0">
+            {% endif %}
                 <div class="card-header fs-2 fw-semibold">
                     {{ g.0 }}
                 </div>

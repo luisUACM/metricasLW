@@ -94,6 +94,7 @@ def eliminar_metodos_acceso(metodos: list) -> ast.FunctionDef:
     Parámetros: La lista de todos los métodos de una clase
     Se eliminarán todos loss métodos getters, setters junto con el método __init_
     """
+    metodo_init = None
     lista_borrar = []
     for m in metodos:
         if isinstance(m, ast.FunctionDef):
