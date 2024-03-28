@@ -1,7 +1,6 @@
 from flask import current_app as app
 from flask import render_template, redirect, flash
 from flask import request
-from ..utils.graficadores.graficador_grafos import crear_grafica_test, networkx_to_figure
 import re, py_compile
 
 RUTA_ARCHIVO = 'src/uploads/Clases.py'
@@ -10,13 +9,6 @@ RUTA_ARCHIVO = 'src/uploads/Clases.py'
 @app.route('/inicio')
 def home():
     return render_template('index.html', title='Inicio')
-
-@app.route('/test')
-def test():
-    grafica = crear_grafica_test()
-    fig = networkx_to_figure(grafica)
-    html = fig.to_html(full_html = False)
-    return render_template('test.html', fig = html)
 
 @app.route('/guardar', methods=['POST'])
 def guardar():

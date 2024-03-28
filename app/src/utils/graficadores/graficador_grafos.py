@@ -3,26 +3,6 @@ import plotly.graph_objects as go
 import ast
 from ..metricas.lcom4 import crear_matriz_adyacencia
 
-
-def crear_grafica_test() -> nx.Graph:
-    """
-    Regresa: Una gráfica de prueba networkx
-    """
-    grafica = nx.Graph()
-
-    grafica.add_node('A')
-    grafica.add_node('B')
-    grafica.add_node('C')
-    grafica.add_node('D')
-
-    grafica.add_edge('A', 'B')
-    grafica.add_edge('C', 'D')
-
-    pos = nx.spring_layout(grafica)
-    nx.set_node_attributes(grafica, pos, 'pos')
-    return grafica
-
-
 def crear_grafo_lcom(clase: ast.ClassDef) -> tuple[str, nx.Graph, int]:
     """
     Parametros: La clase de la que se quiere graficar LCOM4
