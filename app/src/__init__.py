@@ -4,6 +4,7 @@ def init_app():
     app = Flask(__name__)
     app.config['DEBUG'] = True
     app.secret_key = '123456'
+    app.config['UPLOAD_FOLDER'] = 'src/uploads/'
 
     with app.app_context():
         #  =========================================================

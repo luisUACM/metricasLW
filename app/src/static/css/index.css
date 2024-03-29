@@ -14,7 +14,14 @@
     
 }
 
-.flash {
+.flash.success {
     animation: appear 2s linear;
-    color:rgba(255, 0, 0, 0.8);
-}
+    color: green;
+    opacity: 0.8;
+  }
+  
+.flash.error {
+    animation: appear 2s linear;
+    color: red;
+    opacity: 0.8;
+  }
