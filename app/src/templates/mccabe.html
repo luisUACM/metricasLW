@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% for clases in graficas %}
+{% for g in clases%}
+{{ g | safe }}
+{% endfor %}
+{% endfor %}
+{% endblock %}

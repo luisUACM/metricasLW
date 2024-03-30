@@ -1,7 +1,7 @@
 from flask import current_app as app
 from flask import render_template
 
-@app.route('/LIM')
-def lim():
+@app.route('/dld')
+def dld():
     #Aquí va Wendy
-    return render_template('lim.html', title='LIM')
+    return render_template('dld.html', title='dld', title_long='Densidad de líneas duplicadas')
