@@ -1,17 +1,18 @@
 import ast
+import os
 
 class DuplicadosLineasCodigoVisitor(ast.NodeVisitor):
-    def __init__(self):
+    def __init__(self, ruta_archivo):
         self.lineas_codigo = []
+        self.ruta_archivo = ruta_archivo
 
     def visit_FunctionDef(self, node):
-        # Recopilamos las líneas de código dentro de la función
         start_lineno = node.lineno
         end_lineno = node.end_lineno
 
-        #error en el asig esta taratando de accder a un atributo de un objeto asig que no existe y genera el error, esat intenado a acceder a source
-        codigo_funcion = "\n".join(ast.get_source_segment(ast.parse(node.body[0].source()), start_lineno, end_lineno))
-        self.lineas_codigo.append(codigo_funcion)
+        with open(self.ruta_archivo, 'r') as file:
+            codigo_funcion = "\n".join(ast.get_source_segment(ast.parse(file.read()), start_lineno, end_lineno))
+            self.lineas_codigo.append(codigo_funcion)
         self.generic_visit(node)
 
 # Calcula la métrica de densidad de líneas de código duplicadas
@@ -25,20 +26,15 @@ def calcular_densidad_duplicados(lineas_codigo):
         densidad_duplicados = 0
     return densidad_duplicados
 
-# Uso de ejemplo:
-codigo_fuente = """
-def funcion1():
-    x = 1
-    y = 2
+# Ruta del archivo a analizar
+RUTA_ARCHIVO = os.path.join(os.path.dirname(__file__))
 
-def funcion2():
-    x = 1
-    y = 2
-"""
-
-arbol = ast.parse(codigo_fuente)
-duplicados_visitor = DuplicadosLineasCodigoVisitor()
-duplicados_visitor.visit(arbol)
-densidad_duplicados = calcular_densidad_duplicados(duplicados_visitor.lineas_codigo)
+# Analizar el archivo y calcular la densidad de líneas duplicadas
+with open(RUTA_ARCHIVO, "r") as file:
+    contenido = file.read()
+    arbol = ast.parse(contenido)
+    duplicados_visitor = DuplicadosLineasCodigoVisitor(RUTA_ARCHIVO)
+    duplicados_visitor.visit(arbol)
+    densidad_duplicados = calcular_densidad_duplicados(duplicados_visitor.lineas_codigo)
 
 print("Densidad de líneas de código duplicadas:", densidad_duplicados)

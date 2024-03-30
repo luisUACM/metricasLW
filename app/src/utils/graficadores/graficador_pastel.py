@@ -1,9 +1,9 @@
 import plotly.express as px
-from ...utils.metricas.localizacion_impacto import obtener_atributos
+from ...utils.metricas.densidad_lineas_duplicadas import DuplicadosLineasCodigoVisitor
 
 
-fig = px.pie(values =[va,vt],
-             nombres = ['vA', 'vT'],
-             title = 'Localización de impacto de la modificacion')
+fig = px.pie(values =[total_lineas,lineas_duplicadas],
+             nombres = ['TL', 'LD'],
+             title = 'Densidad de lineas duplicadas')
 
 fig.show()
