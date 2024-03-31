@@ -31,4 +31,4 @@ duplicados_visitor = DuplicadosLineasCodigoVisitor()
 duplicados_visitor.visit(ast.parse(open(__file__).read()))
 densidad_duplicados = calcular_densidad_duplicados(duplicados_visitor.lineas_codigo)
 
-print("Densidad de líneas de código duplicadas:", densidad_duplicados)
+#print("Densidad de líneas de código duplicadas:", densidad_duplicados)
