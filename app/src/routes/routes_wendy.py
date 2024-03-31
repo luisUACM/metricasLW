@@ -8,6 +8,7 @@ RUTA_ARCHIVO = app.config['UPLOAD_FOLDER'] + 'Clases.py'
 def densidad_lineas_duplicadas():
     file = open(RUTA_ARCHIVO)
     contenido = file.read()
+    dld = total_lineas - len(lineas_unicas) 
     lineas_totales = len(contenido.splitlines())
     lineas_duplicadas = dld(contenido)
     file.close()
@@ -16,4 +17,4 @@ def densidad_lineas_duplicadas():
 
 
 
-    return render_template('densidad_lineas_duplicadas.html', title='Densidad de líneas duplicadas', title_long='Densidad de líneas duplicadas')
+    return render_template('dld.html', title='Densidad de líneas duplicadas', title_long='Densidad de líneas duplicadas')
