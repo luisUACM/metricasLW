@@ -1,18 +1,18 @@
 import ast
 import os
 
-class DuplicadosLineasCodigoVisitor(ast.NodeVisitor):
-    def __init__(self, ruta_archivo):
+class DuplicadosLineasCodigoVisitor(ast.NodeVisitor):   
+    def __init__(self):
         self.lineas_codigo = []
-        self.ruta_archivo = ruta_archivo
 
     def visit_FunctionDef(self, node):
+        # Get the lines of code for the function
         start_lineno = node.lineno
         end_lineno = node.end_lineno
-
-        with open(self.ruta_archivo, 'r') as file:
-            codigo_funcion = "\n".join(ast.get_source_segment(ast.parse(file.read()), start_lineno, end_lineno))
-            self.lineas_codigo.append(codigo_funcion)
+        with open(__file__, 'r') as file:
+            contenido_archivo = file.readlines()
+            codigo_funcion = contenido_archivo[start_lineno-1:end_lineno]
+            self.lineas_codigo.extend(codigo_funcion)
         self.generic_visit(node)
 
 # Calcula la métrica de densidad de líneas de código duplicadas
@@ -26,15 +26,9 @@ def calcular_densidad_duplicados(lineas_codigo):
         densidad_duplicados = 0
     return densidad_duplicados
 
-# Ruta del archivo a analizar
-RUTA_ARCHIVO = os.path.join(os.path.dirname(__file__))
-
 # Analizar el archivo y calcular la densidad de líneas duplicadas
-with open(RUTA_ARCHIVO, "r") as file:
-    contenido = file.read()
-    arbol = ast.parse(contenido)
-    duplicados_visitor = DuplicadosLineasCodigoVisitor(RUTA_ARCHIVO)
-    duplicados_visitor.visit(arbol)
-    densidad_duplicados = calcular_densidad_duplicados(duplicados_visitor.lineas_codigo)
+duplicados_visitor = DuplicadosLineasCodigoVisitor()
+duplicados_visitor.visit(ast.parse(open(__file__).read()))
+densidad_duplicados = calcular_densidad_duplicados(duplicados_visitor.lineas_codigo)
 
 print("Densidad de líneas de código duplicadas:", densidad_duplicados)
