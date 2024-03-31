@@ -6,7 +6,7 @@ class DuplicadosLineasCodigoVisitor(ast.NodeVisitor):
         self.lineas_codigo = []
 
     def visit_FunctionDef(self, node):
-        # Get the lines of code for the function
+        #obtiene las lienas de codigo para la funcion
         start_lineno = node.lineno
         end_lineno = node.end_lineno
         with open(__file__, 'r') as file:
