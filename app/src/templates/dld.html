@@ -6,43 +6,22 @@
 
 {% block content %}
 <div class="container">
-{% for fila in graficas | batch(3) %}
-    <div class="row gx-4">
-        {% for g in fila %}
-        <div class="col gy-4">
-            {% if g.3 > 1 %}
-            <div class="g-col-4">
-            {% else %}
-            <div class="card text-center border-success ps-0 pe-0"></div>
-            {% endif %}
-            {% if g.2 > 1 %}
-            <div class="g-col-4">
-            {% else %}
+    <div class="row">
+        <div class="col-md-6">
             <div class="card text-center border-success ps-0 pe-0">
-            {% endif %}
                 <div class="card-header fs-2 fw-semibold">
-                    {{ g.0 }}
+                    {{ title }}
                 </div>
                 <div class="card-body overflow-hidden">
-                    {{ g.0 | safe }}
-                </div>
-                <div class="card-body overflow-hidden">
-                    {{ g.1 | safe }}
-                </div>
-                <div class="card-body overflow-hidden">
-                    {{ g.2 | safe }}
+                    {{ plot | safe }}
                 </div>
                 <div class="card-footer text-body-secondary">
-                    <span class="fw-bold">Densidad de lineas duplicadas</span>
-                    = {{ g.3 }}
-                    = {{densidad}}
+                    <span class="fw-bold">Densidad de lineas duplicadas:</span>
+                    {{ densidad }}
                 </div>
             </div>
-          </div>
         </div>
-        {% endfor %}
     </div>
-{% endfor %}
 </div>
 <br/>
 {% endblock %}

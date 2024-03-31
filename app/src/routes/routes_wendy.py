@@ -17,6 +17,8 @@ def dld(code):
             unique_lines.add(line)
     return len(duplicates)
 
+# Initialize an empty list to store the plots
+
 
 @app.route('/DensidadLineasDuplicadas')
 def densidad_lineas_duplicadas():
@@ -28,6 +30,7 @@ def densidad_lineas_duplicadas():
     # Calcula la densidad de líneas de código
     densidad = lineas_duplicadas / lineas_totales * 100
 
-    grafico_pastel(lineas_totales, lineas_duplicadas)
+    # Generate the HTML representation of the plot and append it to the list
+    plot = grafico_pastel(lineas_totales, lineas_duplicadas).to_html(full_html=False)
 
-    return render_template('dld.html', title='Densidad de líneas duplicadas', title_long='Densidad de líneas duplicadas', densidad=densidad)
+    return render_template('dld.html', title='Densidad de líneas duplicadas', title_long='Densidad de líneas duplicadas', densidad=densidad, plot=plot)
