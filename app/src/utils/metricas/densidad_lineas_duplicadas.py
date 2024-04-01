@@ -11,7 +11,8 @@ class DuplicadosLineasCodigoVisitor(ast.NodeVisitor):
         end_lineno = node.end_lineno
         with open(__file__, 'r') as file:
             contenido_archivo = file.readlines()
-            codigo_funcion = contenido_archivo[start_lineno-1:end_lineno]
+            #string verifica que no se encuentre lineas vacias
+            codigo_funcion = [line for line in contenido_archivo[start_lineno-1:end_lineno] if line.strip()]
             self.lineas_codigo.extend(codigo_funcion)
         self.generic_visit(node)
 

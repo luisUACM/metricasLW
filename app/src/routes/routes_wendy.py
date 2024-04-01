@@ -6,18 +6,12 @@ RUTA_ARCHIVO = app.config['UPLOAD_FOLDER'] + 'Clases.py'
 
 def dld(code):
 
-    lines = code.splitlines()
-    unique_lines = set()
-    duplicates =[]
-
-    for line in lines:
-        if line in unique_lines:
-            duplicates.append(line)
-        else:
-            unique_lines.add(line)
+    lines = [line for line in code.splitlines() if line.strip()]
+    unique_lines = set(line for line in lines if line.strip())
+    duplicates =[line for line in lines if line.strip() and line in lines and lines.count(line) > 1]
     return len(duplicates)
 
-# Initialize an empty list to store the plots
+# Inicializa una lista vacía para almacenar los gráficos.
 
 
 @app.route('/DensidadLineasDuplicadas')
