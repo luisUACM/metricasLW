@@ -37,6 +37,24 @@ def mccabe():
     graficas_metodo = []
     figuras_metodo = []
     figuras_clase = []
+    descripcion = '''El valor de complejidad ciclomática (V) del grafo (G) representa que tan complejo es un método.\n
+<b>Cómo calcular:</b>
+    Realizar un grafo del flujo del programa. Donde cada decision es un nodo que se bifurca.
+    
+    Fórmula:  V(G) = A - N + 2
+
+    Donde:  A = El número de aristas del grafo
+            N = El número de nodos del grafo
+
+<b>Valores de referencia:</b>
+    - 1-10      --> Programa simple, poco riesgo
+    - 11-20     --> Más complejo, riesgo moderado
+    - 21-50     --> Complejo, alto riesgo
+    - >50       --> Imposible de probar, riesgo altísimo
+
+Para valores de V muy altos sería recomendable refactorizar la lógica del método o seccionar 
+el método y relegar tareas.
+    '''
 
     file.close()
     for c in clases:
@@ -46,4 +64,4 @@ def mccabe():
             figuras_metodo.append(fig.to_html(full_html = False))
         figuras_clase.append(figuras_metodo)
         figuras_metodo = []
-    return render_template('mccabe.html', title='McCabe', title_long='Complejidad cicolmática', graficas=figuras_clase)
+    return render_template('mccabe.html', title='McCabe', title_long='Complejidad cicolmática', graficas_clase=figuras_clase, descripcion=descripcion)

@@ -7,6 +7,12 @@ class VisitanteNodos(ast.NodeVisitor):
         self.lista_atributos = []
         self.lista_decisiones = []
         super().__init__()
+    
+    def reset_status(self):
+        self.lista_calls = []
+        self.lista_accesos = []
+        self.lista_atributos = []
+        self.lista_decisiones = []
 
     def visit_Call(self,node):
         self.lista_calls.append(node)
@@ -47,22 +53,22 @@ class VisitanteNodos(ast.NodeVisitor):
     
     def get_llamadas(self):
         l = self.lista_calls
-        self.lista_calls = []
+        self.reset_status()
         return l
     
     def get_accesos(self):
         l = self.lista_accesos
-        self.lista_accesos = []
+        self.reset_status()
         return l
     
     def get_self_accesos(self):
         l = self.lista_atributos
-        self.lista_atributos = []
+        self.reset_status()
         return l
     
     def get_decisiones(self):
         l = self.lista_decisiones
-        self.lista_decisiones = []
+        self.reset_status()
         return l
 
 def print_node(nodo: ast.AST):
