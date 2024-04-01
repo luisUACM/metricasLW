@@ -26,3 +26,5 @@ Los siguientes paquetes deberán ser instalados para poder ejecutar el programa:
 ♦ plotly       5.19.0
 ♦ numpy        1.26.4
 ♦ networkx     3.2.1
+♦ pandas       2.2.1
+♦ numpy        1.26.4
