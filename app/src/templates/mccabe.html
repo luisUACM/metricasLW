@@ -1,9 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% for clases in graficas %}
-{% for g in clases%}
-{{ g | safe }}
-{% endfor %}
-{% endfor %}
+    {% for clase in graficas_clase %}
+        <div class="container">
+            <div class="col">
+                <h2>{{ clase.0 }}</h2>
+            </div>
+        </div>
+        <div class="container">
+            {% for fila in clase.1 | batch(2) %}
+                <div class="row gx-4">
+                {% for g in fila %}
+                    <div class="col gy-4">
+                        <div class="card text-center border-success ps-0 pe-0">
+                            <div class="card-header fs-3 fw-semibold">{{ g.0 }}</div>
+                            <div class="card-body overflow-hidden">
+                                {{ g.1 | safe }}
+                            </div>
+                            <div class="card-footer text-body-secondary">
+                                <span class="fw-bold">V(G)</span>
+                                = {{ g.2 }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+        <hr>
+    {% endfor %}
+    <br/>
 {% endblock %}
