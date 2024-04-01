@@ -20,6 +20,8 @@ def densidad_lineas_duplicadas():
         contenido = file.read()
     lineas_totales = len(contenido.splitlines())
     lineas_duplicadas = dld(contenido)
+    descripcion = '''Para calcular la Densidad de lineas de un programa es necesaria la formula
+    X = Lineas Duplicadas/Lineas totales * 100, aqui mostramos que no toma las lineas en blanco '''
 
     # Calcula la densidad de líneas de código
     densidad = lineas_duplicadas / lineas_totales * 100
@@ -27,4 +29,4 @@ def densidad_lineas_duplicadas():
     # Generate the HTML representation of the plot and append it to the list
     plot = grafico_pastel(lineas_totales, lineas_duplicadas).to_html(full_html=False)
 
-    return render_template('dld.html', title='Densidad de líneas duplicadas', title_long='Densidad de líneas duplicadas', densidad=densidad, plot=plot)
+    return render_template('dld.html', title='Densidad de líneas duplicadas', title_long='Densidad de líneas duplicadas', densidad=densidad, plot=plot, descripcion=descripcion)
