@@ -7,27 +7,14 @@ def graficar_complejidad_ciclomatica(metodo: ast.FunctionDef) -> tuple [str, nx.
     Regresa: Un grafo que representa el flujo del método
     """
     grafica = nx.Graph()
-    visitante = ma.VisitanteNodos()
     lista_decisiones = []
     lista_nombres = []
 
-    visitante.visit(metodo)
-    lista_decisiones = visitante.get_decisiones()
-
+    lista_decisiones = [n for n in metodo.body if isinstance(n, ast.If) or isinstance(n, ast.While) or isinstance(n, ast.For) or isinstance(n, ast.BoolOp)]
     for d in lista_decisiones:
         nombre_padre = get_nombre_decision(d)
         lista_nombres.append(nombre_padre)
-        
-        if isinstance(d, ast.If):
-            agregar_nodos_else(d, grafica)
-            """
-            for hijo in ast.iter_child_nodes(d):
-                nombre_hijo = get_nombre_decision(hijo)
-                if nombre_hijo != ' ':
-                    print('Se entro al if de:' + nombre_padre + ', ' + nombre_hijo)
-                    lista_nombres.append(nombre_hijo)
-                    grafica.add_edge(nombre_padre, nombre_hijo)
-            """
+        agregar_decision(d, grafica)
 
     pos = nx.planar_layout(grafica)
     nx.set_node_attributes(grafica, pos, 'pos')
@@ -58,21 +45,96 @@ def get_nombre_decision(nodo: ast.AST) -> str:
             nombre = 'or'
     return nombre + ' ' + linea
 
-def agregar_nodos_else(nodo: ast.AST, grafica: nx.Graph):
+def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) -> list:
     """
-    Parámetros: un nodo que puede ser una decision y la gráfica a la que añadirle el nodo
-    Para los nodos If e If-else se agregan 2 nodos
+    Parámetros: La decisión ast para agregar, la gráfica networkx en donde agregarla y el nombre del nodo padre (en la gráfica) si es que tiene uno
+    Regresa: La lista de nodos que continuan el con flujo del programa despues de la decisión.
+    Esta es una funcion recursiva que usa esta información de retorno para agregar conexiones a la grafica
     """
-    nombre_nodo = get_nombre_decision(nodo)
-    
-    if isinstance(nodo, ast.If):
-        nombre_if = nombre_nodo
-        nombre_flujo_if = ''
+    nodos_hoja = []
+    nombre_decision = get_nombre_decision(decision)
+    camino_else = ''
+    camino_feliz = ''
+    lista_decisiones_hijas = []
+    fin_decision = ''
+    nodos_fin = []
 
-        if nodo.orelse:
-            nombre_else = 'else ' + str(nodo.orelse[0].lineno - 1)
-            grafica.add_edge(nombre_if, nombre_else)
+    #               Pasos para procesar If
+    #1 - Agregar nodo if
+    #2 - Agregar camino 'True'
+    #3 - Agregar camino 'False'
+    #4 - Agregar decisiones internas y procesar las mismas
+    #5 - Obtener y conectar la lista de nodos_hoja. Aquellos nodos que no tienen mas decisiones internas
+    #6 - Obtener y conectar la lista de nodos_fin. Representan el flujo que continua tras la decision
+    if isinstance(decision, ast.If):
+
+        #Pasos 1 y 2
+        camino_feliz = str(decision.lineno + 1) + ' (T)'
+        grafica.add_edge(nombre_decision, camino_feliz)
         
-        nombre_flujo_if = str(nodo.lineno + 1)
-        grafica.add_edge(nombre_if, nombre_flujo_if)
+        if decision.orelse:
+            fin_decision = str(decision.orelse[-1].lineno + 1) + ' (Endif)'
+            camino_else = str(decision.orelse[0].lineno) + ' (Else)'
+            lista_decisiones_hijas = ma.obtener_decisiones_directas(decision)
+
+            #Paso 3
+            grafica.add_edge(nombre_decision, camino_else)
+
+            #Pasos 4, 5 y 6 (Parte del if simple)
+            if len(lista_decisiones_hijas) != 0:
+                for d in lista_decisiones_hijas:
+                    nodos_fin = agregar_decision(d, grafica, camino_feliz)
+            else:
+                nodos_hoja.append(camino_feliz)
+            if padre != None:
+                nodos_fin.append(fin_decision)
+
+            #Pasos 4, 5, y 6 (Parte del else)
+            lista_decisiones_hijas = ma.obtener_decisiones_directas(decision, True)
+            if len(lista_decisiones_hijas) != 0:
+                for d in lista_decisiones_hijas:
+                    for i in agregar_decision(d, grafica, camino_else):
+                        nodos_fin.append(i)
+            else:
+                nodos_hoja.append(camino_else)
+            for d in nodos_hoja:
+                grafica.add_edge(fin_decision, d)
+        else:
+            fin_decision = str(decision.body[-1].end_lineno + 1) + ' (Endif)'
+            camino_else = str(decision.end_lineno + 1) + ' (F)'
+            lista_decisiones_hijas = ma.obtener_decisiones_directas(decision)
+
+            #Paso 3
+            nodos_hoja.append(camino_else)
+            grafica.add_edge(nombre_decision, camino_else)
+
+            #Pasos 4, 5 y 6
+            if len(lista_decisiones_hijas) != 0:
+                for d in lista_decisiones_hijas:
+                    nodos_fin = agregar_decision(d, grafica, camino_feliz)
+            else:
+                nodos_hoja.append(camino_feliz)
+            for d in nodos_hoja:
+                grafica.add_edge(camino_else, d)
+            if padre != None:
+                nodos_fin.append(camino_else)
+
+        if padre == None:
+            for d in nodos_fin:
+                grafica.add_edge(fin_decision, d)
+
+    elif isinstance(decision, ast.For):
+        #TODO
+        pass
+    elif isinstance(decision, ast.While):
+        #TODO
+        pass
+    elif isinstance(decision, ast.BoolOp):
+        #TODO
+        pass
         
+    if padre != None:
+        grafica.add_edge(padre, nombre_decision)
+
+    return nodos_fin
+

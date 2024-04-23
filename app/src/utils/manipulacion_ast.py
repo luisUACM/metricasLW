@@ -160,3 +160,18 @@ def busca_funcion(lista_llamadas: list, funcion: ast.FunctionDef) -> bool:
                     if n.func.attr == funcion.name:
                         return True
     return False
+
+def obtener_decisiones_directas(decision: ast.AST, lista_else: bool = False) -> list:
+    """
+    Parámetros: un objeto ast que representa una decision y tiene un cuerpo
+    Nodos de decisiones conocidos: ast.If, ast.For, astWhile
+    Regresa: una lista con las decisiones que se encuentran en el cuerpo. 
+    Si el parametro lista_else es True, regresa la lista del cuerpo de la clausula else
+    """
+    lista = []
+    if isinstance(decision, ast.If) or isinstance(decision, ast.While) or isinstance(decision, ast.For):
+        if lista_else:
+            lista = [n for n in decision.orelse if isinstance(n, ast.If) or isinstance(n, ast.While) or isinstance(n, ast.For) or isinstance(n, ast.BoolOp)]
+        else:
+            lista = [n for n in decision.body if isinstance(n, ast.If) or isinstance(n, ast.While) or isinstance(n, ast.For) or isinstance(n, ast.BoolOp)]
+    return lista
