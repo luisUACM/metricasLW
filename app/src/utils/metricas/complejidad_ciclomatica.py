@@ -48,7 +48,7 @@ def get_nombre_decision(nodo: ast.AST) -> str:
 def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) -> list:
     """
     Parámetros: La decisión ast para agregar, la gráfica networkx en donde agregarla y el nombre del nodo padre (en la gráfica) si es que tiene uno
-    Regresa: La lista de nodos que continuan el con flujo del programa despues de la decisión.
+    Regresa: Una tupla con la lista de nodos que no han sido conectados con el final y el nodo que continua con el flujo del programa despues de la decisión.
     Esta es una funcion recursiva que usa esta información de retorno para agregar conexiones a la grafica
     """
     nodos_hoja = []
@@ -58,6 +58,7 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
     lista_decisiones_hijas = []
     fin_decision = ''
     nodos_fin = []
+    ultimo_nodo = ''
 
     #               Pasos para procesar If
     #1 - Agregar nodo if
@@ -81,26 +82,29 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
             grafica.add_edge(nombre_decision, camino_else)
 
             #Pasos 4, 5 y 6 (Parte del if simple)
+            ultimo_nodo = camino_feliz
             if len(lista_decisiones_hijas) != 0:
                 for d in lista_decisiones_hijas:
-                    nodos_fin = agregar_decision(d, grafica, camino_feliz)
+                    (nodos_fin, ultimo_nodo) = agregar_decision(d, grafica, ultimo_nodo)
             else:
                 nodos_hoja.append(camino_feliz)
             if padre != None:
                 nodos_fin.append(fin_decision)
 
             #Pasos 4, 5, y 6 (Parte del else)
+            ultimo_nodo = camino_else
             lista_decisiones_hijas = ma.obtener_decisiones_directas(decision, True)
             if len(lista_decisiones_hijas) != 0:
                 for d in lista_decisiones_hijas:
-                    for i in agregar_decision(d, grafica, camino_else):
+                    for i, j in agregar_decision(d, grafica, ultimo_nodo):
                         nodos_fin.append(i)
+                        ultimo_nodo = j
             else:
                 nodos_hoja.append(camino_else)
             for d in nodos_hoja:
                 grafica.add_edge(fin_decision, d)
         else:
-            fin_decision = str(decision.body[-1].end_lineno + 1) + ' (Endif)'
+            fin_decision = str(decision.end_lineno + 1) + ' (Endif)'
             camino_else = str(decision.end_lineno + 1) + ' (F)'
             lista_decisiones_hijas = ma.obtener_decisiones_directas(decision)
 
@@ -109,15 +113,16 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
             grafica.add_edge(nombre_decision, camino_else)
 
             #Pasos 4, 5 y 6
+            ultimo_nodo = camino_feliz
             if len(lista_decisiones_hijas) != 0:
                 for d in lista_decisiones_hijas:
-                    nodos_fin = agregar_decision(d, grafica, camino_feliz)
+                    (nodos_fin, ultimo_nodo) = agregar_decision(d, grafica, ultimo_nodo)
             else:
                 nodos_hoja.append(camino_feliz)
             for d in nodos_hoja:
-                grafica.add_edge(camino_else, d)
+                grafica.add_edge(fin_decision, d)
             if padre != None:
-                nodos_fin.append(camino_else)
+                nodos_fin.append(fin_decision)
 
         if padre == None:
             for d in nodos_fin:
@@ -136,5 +141,5 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
     if padre != None:
         grafica.add_edge(padre, nombre_decision)
 
-    return nodos_fin
+    return (nodos_fin, fin_decision)
 
