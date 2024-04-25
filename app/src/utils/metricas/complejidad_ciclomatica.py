@@ -45,7 +45,7 @@ def get_nombre_decision(nodo: ast.AST) -> str:
             nombre = 'or'
     return nombre + ' ' + linea
 
-def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) -> list:
+def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) -> tuple[list, str]:
     """
     Parámetros: La decisión ast para agregar, la gráfica networkx en donde agregarla y el nombre del nodo padre (en la gráfica) si es que tiene uno
     Regresa: Una tupla con la lista de nodos que no han sido conectados con el final y el nodo que continua con el flujo del programa despues de la decisión.
@@ -72,9 +72,9 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
         #Pasos 1 y 2
         camino_feliz = str(decision.lineno + 1) + ' (T)'
         grafica.add_edge(nombre_decision, camino_feliz)
-        
+        fin_decision = str(decision.end_lineno + 1) + ' (Endif)'
+
         if decision.orelse:
-            fin_decision = str(decision.orelse[-1].lineno + 1) + ' (Endif)'
             camino_else = str(decision.orelse[0].lineno) + ' (Else)'
             lista_decisiones_hijas = ma.obtener_decisiones_directas(decision)
 
@@ -104,7 +104,6 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
             for d in nodos_hoja:
                 grafica.add_edge(fin_decision, d)
         else:
-            fin_decision = str(decision.end_lineno + 1) + ' (Endif)'
             camino_else = str(decision.end_lineno + 1) + ' (F)'
             lista_decisiones_hijas = ma.obtener_decisiones_directas(decision)
 
@@ -132,8 +131,26 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
         #TODO
         pass
     elif isinstance(decision, ast.While):
-        #TODO
-        pass
+        fin_decision = str(decision.end_lineno)
+        camino_feliz = str(decision.lineno + 1) + ' (T)'
+        camino_else = str(decision.end_lineno + 1) + ' (F)'
+        lista_decisiones_hijas = ma.obtener_decisiones_directas(decision)
+
+        #Caminos True y False
+        grafica.add_edge(nombre_decision, camino_feliz)
+        grafica.add_edge(nombre_decision, camino_else)
+
+        #Decisiones internas        
+        if len(lista_decisiones_hijas) != 0:
+            for d in lista_decisiones_hijas:
+                (nodos_fin, ultimo_nodo) = agregar_decision(d, grafica, ultimo_nodo)
+        else:
+            nodos_hoja.append(camino_feliz)
+        #Ciclo
+        grafica.add_edge(camino_feliz, fin_decision) #No es a fin decision, es al ultimo nodo del los internos
+        grafica.add_edge(fin_decision, nombre_decision)
+
+
     elif isinstance(decision, ast.BoolOp):
         #TODO
         pass
@@ -143,3 +160,10 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
 
     return (nodos_fin, fin_decision)
 
+def calcular_mccabe(metodo: ast.FunctionDef):
+    """
+    Parámetros: El método del cual calcular la complejidad ciclomática
+    Regresa: El valor de la complejidad ciclomática
+    """
+    #TODO
+    return 0
