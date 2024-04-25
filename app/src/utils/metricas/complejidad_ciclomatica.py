@@ -59,6 +59,10 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
     fin_decision = ''
     nodos_fin = []
     ultimo_nodo = ''
+    camino_loop = ''
+
+    #bug 1: Dos nodos directamente del cuerpo del metodo no se conectan. Posiblemente tenga que ver con que los 2 no tienen padre
+    #bug 2: Dos while que terminen en la misma linea sse diagraman mal dado que el nodo de fin de ambos tiene el mismo nombre 
 
     #               Pasos para procesar If
     #1 - Agregar nodo if
@@ -131,26 +135,26 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
         #TODO
         pass
     elif isinstance(decision, ast.While):
-        fin_decision = str(decision.end_lineno)
+        camino_loop = str(decision.end_lineno) + ' (While-loop)'
         camino_feliz = str(decision.lineno + 1) + ' (T)'
-        camino_else = str(decision.end_lineno + 1) + ' (F)'
+        fin_decision = str(decision.end_lineno + 1) + ' (Endwhile)'
         lista_decisiones_hijas = ma.obtener_decisiones_directas(decision)
 
         #Caminos True y False
         grafica.add_edge(nombre_decision, camino_feliz)
-        grafica.add_edge(nombre_decision, camino_else)
+        grafica.add_edge(nombre_decision, fin_decision)
 
-        #Decisiones internas        
+        #Decisiones internas
+        ultimo_nodo = camino_feliz
         if len(lista_decisiones_hijas) != 0:
             for d in lista_decisiones_hijas:
                 (nodos_fin, ultimo_nodo) = agregar_decision(d, grafica, ultimo_nodo)
         else:
             nodos_hoja.append(camino_feliz)
+
         #Ciclo
-        grafica.add_edge(camino_feliz, fin_decision) #No es a fin decision, es al ultimo nodo del los internos
-        grafica.add_edge(fin_decision, nombre_decision)
-
-
+        grafica.add_edge(ultimo_nodo, camino_loop)
+        grafica.add_edge(camino_loop, nombre_decision)
     elif isinstance(decision, ast.BoolOp):
         #TODO
         pass
