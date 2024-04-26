@@ -164,10 +164,12 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
 
     return (nodos_fin, fin_decision)
 
-def calcular_mccabe(metodo: ast.FunctionDef):
+def calcular_mccabe(metodo: ast.FunctionDef) -> int:
     """
     Parámetros: El método del cual calcular la complejidad ciclomática
     Regresa: El valor de la complejidad ciclomática
     """
-    #TODO
-    return 0
+    visitante = ma.VisitanteNodos()
+    visitante.visit(metodo)
+    lista = visitante.get_decisiones()
+    return len(lista) + 1
