@@ -11,10 +11,11 @@ def graficar_complejidad_ciclomatica(metodo: ast.FunctionDef) -> tuple [str, nx.
     lista_nombres = []
 
     lista_decisiones = [n for n in metodo.body if isinstance(n, ast.If) or isinstance(n, ast.While) or isinstance(n, ast.For) or isinstance(n, ast.BoolOp)]
+    padre = None
     for d in lista_decisiones:
         nombre_padre = get_nombre_decision(d)
         lista_nombres.append(nombre_padre)
-        agregar_decision(d, grafica)
+        (i, padre) = agregar_decision(d, grafica, padre)
 
     pos = nx.planar_layout(grafica)
     nx.set_node_attributes(grafica, pos, 'pos')
@@ -149,12 +150,16 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
         if len(lista_decisiones_hijas) != 0:
             for d in lista_decisiones_hijas:
                 (nodos_fin, ultimo_nodo) = agregar_decision(d, grafica, ultimo_nodo)
+            else:
+                grafica.add_edge(ultimo_nodo, camino_loop)
+                grafica.add_edge(camino_loop, nombre_decision)
         else:
+            #Ciclo
+            grafica.add_edge(ultimo_nodo, camino_loop)
+            grafica.add_edge(camino_loop, nombre_decision)
             nodos_hoja.append(camino_feliz)
 
-        #Ciclo
-        grafica.add_edge(ultimo_nodo, camino_loop)
-        grafica.add_edge(camino_loop, nombre_decision)
+       
     elif isinstance(decision, ast.BoolOp):
         #TODO
         pass
