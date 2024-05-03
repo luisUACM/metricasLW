@@ -62,9 +62,6 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
     ultimo_nodo = ''
     camino_loop = ''
 
-    #bug 1: Dos nodos directamente del cuerpo del metodo no se conectan. Posiblemente tenga que ver con que los 2 no tienen padre
-    #bug 2: Dos while que terminen en la misma linea sse diagraman mal dado que el nodo de fin de ambos tiene el mismo nombre 
-
     #               Pasos para procesar If
     #1 - Agregar nodo if
     #2 - Agregar camino 'True'
@@ -77,7 +74,7 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
         #Pasos 1 y 2
         camino_feliz = str(decision.lineno + 1) + ' (T)'
         grafica.add_edge(nombre_decision, camino_feliz)
-        fin_decision = str(decision.end_lineno + 1) + ' (Endif)'
+        fin_decision = str(decision.end_lineno + 1) + ' (End)'
 
         if decision.orelse:
             camino_else = str(decision.orelse[0].lineno) + ' (Else)'
@@ -108,8 +105,9 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
                 nodos_hoja.append(camino_else)
             for d in nodos_hoja:
                 grafica.add_edge(fin_decision, d)
+            
         else:
-            camino_else = str(decision.end_lineno + 1) + ' (F)'
+            camino_else = str(decision.end_lineno + 1) + ' (F ' + str(decision.lineno) + ')'
             lista_decisiones_hijas = ma.obtener_decisiones_directas(decision)
 
             #Paso 3
@@ -132,13 +130,10 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
             for d in nodos_fin:
                 grafica.add_edge(fin_decision, d)
 
-    elif isinstance(decision, ast.For):
-        #TODO
-        pass
-    elif isinstance(decision, ast.While):
-        camino_loop = str(decision.end_lineno) + ' (While-loop)'
+    elif isinstance(decision, ast.While) or isinstance(decision, ast.For):
+        camino_loop = str(decision.end_lineno) + ' (Loop' + str(decision.lineno) +')'
         camino_feliz = str(decision.lineno + 1) + ' (T)'
-        fin_decision = str(decision.end_lineno + 1) + ' (Endwhile)'
+        fin_decision = str(decision.end_lineno + 1) + ' (End ' + str(decision.lineno) +')'
         lista_decisiones_hijas = ma.obtener_decisiones_directas(decision)
 
         #Caminos True y False
@@ -158,11 +153,9 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
             grafica.add_edge(ultimo_nodo, camino_loop)
             grafica.add_edge(camino_loop, nombre_decision)
             nodos_hoja.append(camino_feliz)
-
        
     elif isinstance(decision, ast.BoolOp):
-        #TODO
-        pass
+        camino_feliz = get_nombre_decision(decision) + str(decision.lineno)
         
     if padre != None:
         grafica.add_edge(padre, nombre_decision)
