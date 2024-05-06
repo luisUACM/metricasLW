@@ -9,8 +9,19 @@ def graficar_complejidad_ciclomatica(metodo: ast.FunctionDef) -> tuple [str, nx.
     grafica = nx.Graph()
     lista_decisiones = []
     lista_nombres = []
+    lista_decisiones_compuestas = []
+    lista_asignaciones = []
 
-    lista_decisiones = [n for n in metodo.body if isinstance(n, ast.If) or isinstance(n, ast.While) or isinstance(n, ast.For) or isinstance(n, ast.BoolOp)]
+    lista_decisiones = [n for n in metodo.body if isinstance(n, ast.If) or isinstance(n, ast.While) or isinstance(n, ast.For)]
+    lista_asignaciones = [n for n in metodo.body if isinstance(n, ast.Assign)]
+    lista_decisiones_compuestas = ma.obtener_decisiones_compuestas(lista_asignaciones)
+    for d in lista_decisiones_compuestas:
+        lista_decisiones.append(d)
+
+    if metodo.name == 'poner_reversa':
+        #ma.print_node(metodo)
+        print(lista_decisiones)
+
     padre = None
     for d in lista_decisiones:
         nombre_padre = get_nombre_decision(d)
@@ -61,7 +72,7 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
     nodos_fin = []
     ultimo_nodo = ''
     camino_loop = ''
-
+    
     #               Pasos para procesar If
     #1 - Agregar nodo if
     #2 - Agregar camino 'True'
@@ -154,9 +165,17 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
             grafica.add_edge(camino_loop, nombre_decision)
             nodos_hoja.append(camino_feliz)
        
-    elif isinstance(decision, ast.BoolOp):
-        camino_feliz = get_nombre_decision(decision) + str(decision.lineno)
-        
+    elif isinstance(decision, tuple):
+        #Modificar los pythondocs, usar las tuplas
+        if isinstance(decision, ast.Or) or isinstance(decision, ast.And):
+            camino_feliz = get_nombre_decision(decision)
+            camino_else = str(decision.lineno + 1) + ' (F ' + str(decision.lineno) + ')'
+            ultimo_nodo = str(decision.lineno + 1)
+
+            grafica.add_edge(nombre_decision, camino_feliz)
+            grafica.add_edge(nombre_decision, camino_else)
+            nodos_hoja.append(camino_feliz)
+            nodos_hoja.append(camino_else)
     if padre != None:
         grafica.add_edge(padre, nombre_decision)
 

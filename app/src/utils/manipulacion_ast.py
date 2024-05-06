@@ -47,7 +47,11 @@ class VisitanteNodos(ast.NodeVisitor):
         self.lista_decisiones.append(node)
         ast.NodeVisitor.generic_visit(self, node)
 
-    def visit_BoolOp(self, node):
+    def visit_Or(self, node):
+        self.lista_decisiones.append(node)
+        ast.NodeVisitor.generic_visit(self, node)
+    
+    def visit_And(self, node):
         self.lista_decisiones.append(node)
         ast.NodeVisitor.generic_visit(self, node)
     
@@ -161,17 +165,38 @@ def busca_funcion(lista_llamadas: list, funcion: ast.FunctionDef) -> bool:
                         return True
     return False
 
-def obtener_decisiones_directas(decision: ast.AST, lista_else: bool = False) -> list:
+def obtener_decisiones_directas(decision: ast.AST, lista_else: bool = False) -> list[tuple[ast.Assign, ast.Or | ast.And | ast.For | ast.While | ast.If]]:
     """
-    Parámetros: un objeto ast que representa una decision y tiene un cuerpo
-    Nodos de decisiones conocidos: ast.If, ast.For, astWhile
-    Regresa: una lista con las decisiones que se encuentran en el cuerpo. 
+    Parámetros: Un objeto ast que representa una decision (ast.If | ast.For | ast.While)
+    Regresa: una lista con las decisiones que se encuentran en el cuerpo.
     Si el parametro lista_else es True, regresa la lista del cuerpo de la clausula else
     """
     lista = []
+    asignaciones = []
+    decisiones_compuestas = []
+    cuerpo = None
     if isinstance(decision, ast.If) or isinstance(decision, ast.While) or isinstance(decision, ast.For):
         if lista_else:
-            lista = [n for n in decision.orelse if isinstance(n, ast.If) or isinstance(n, ast.While) or isinstance(n, ast.For) or isinstance(n, ast.BoolOp)]
+            cuerpo = decision.orelse
         else:
-            lista = [n for n in decision.body if isinstance(n, ast.If) or isinstance(n, ast.While) or isinstance(n, ast.For) or isinstance(n, ast.BoolOp)]
+            cuerpo = decision.body
+        lista = [n for n in cuerpo if isinstance(n, ast.If) or isinstance(n, ast.While) or isinstance(n, ast.For)]
+
+        asignaciones = [n for n in cuerpo if isinstance(n, ast.Assign)]
+        decisiones_compuestas = obtener_decisiones_compuestas(asignaciones)
+        for t in decisiones_compuestas:
+            lista.append(t)
     return lista
+
+def obtener_decisiones_compuestas(asignaciones: list[ast.Assign]) -> list[tuple[ast.Assign, ast.Or | ast.And]]:
+    """
+    Parámetros: Una lista de asignaciones ast.Assign
+    Regresa: La lista de objetos ast.Or o ast.And que se encontraban dentro de las asignaciones
+    """
+    lista = [n for n in asignaciones if isinstance(n, ast.Assign)]
+    decisiones_compuestas = []
+    for d in lista:
+        if isinstance(d.value, ast.BoolOp):
+            if isinstance(d.value.op, ast.Or) or isinstance(d.value.op, ast.And):
+                decisiones_compuestas.append((d, d.value.op))
+    return decisiones_compuestas
