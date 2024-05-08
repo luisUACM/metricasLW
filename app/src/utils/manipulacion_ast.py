@@ -6,6 +6,7 @@ class VisitanteNodos(ast.NodeVisitor):
         self.lista_accesos = []
         self.lista_atributos = []
         self.lista_decisiones = []
+        self.lista_decisiones_compuestas = []
         super().__init__()
     
     def reset_status(self):
@@ -13,6 +14,7 @@ class VisitanteNodos(ast.NodeVisitor):
         self.lista_accesos = []
         self.lista_atributos = []
         self.lista_decisiones = []
+        self.lista_decisiones_compuestas = []
 
     def visit_Call(self,node):
         self.lista_calls.append(node)
@@ -49,10 +51,12 @@ class VisitanteNodos(ast.NodeVisitor):
 
     def visit_Or(self, node):
         self.lista_decisiones.append(node)
+        self.lista_decisiones_compuestas.append(node)
         ast.NodeVisitor.generic_visit(self, node)
     
     def visit_And(self, node):
         self.lista_decisiones.append(node)
+        self.lista_decisiones_compuestas.append(node)
         ast.NodeVisitor.generic_visit(self, node)
     
     def get_llamadas(self):
@@ -72,6 +76,11 @@ class VisitanteNodos(ast.NodeVisitor):
     
     def get_decisiones(self):
         l = self.lista_decisiones
+        self.reset_status()
+        return l
+    
+    def get_decisiones_compuestas(self):
+        l = self.lista_decisiones_compuestas
         self.reset_status()
         return l
 
@@ -165,6 +174,7 @@ def busca_funcion(lista_llamadas: list, funcion: ast.FunctionDef) -> bool:
                         return True
     return False
 
+#TODO
 def obtener_decisiones_directas(decision: ast.AST, lista_else: bool = False) -> list[tuple[ast.Assign, ast.Or | ast.And | ast.For | ast.While | ast.If]]:
     """
     Parámetros: Un objeto ast que representa una decision (ast.If | ast.For | ast.While)
@@ -190,13 +200,12 @@ def obtener_decisiones_directas(decision: ast.AST, lista_else: bool = False) -> 
 
 def obtener_decisiones_compuestas(asignaciones: list[ast.Assign]) -> list[tuple[ast.Assign, ast.Or | ast.And]]:
     """
+    #TODO
     Parámetros: Una lista de asignaciones ast.Assign
     Regresa: La lista de objetos ast.Or o ast.And que se encontraban dentro de las asignaciones
     """
-    lista = [n for n in asignaciones if isinstance(n, ast.Assign)]
     decisiones_compuestas = []
-    for d in lista:
-        if isinstance(d.value, ast.BoolOp):
-            if isinstance(d.value.op, ast.Or) or isinstance(d.value.op, ast.And):
-                decisiones_compuestas.append((d, d.value.op))
+    for a in asignaciones:
+        if isinstance(a.value, ast.BoolOp):
+            decisiones_compuestas.append(a.value)
     return decisiones_compuestas

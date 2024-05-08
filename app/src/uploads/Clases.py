@@ -52,7 +52,8 @@ class Carro():
     def poner_reversa(self, cantidad: int):
         self.frenar(self.velocidad)
         self.acelerar(cantidad)
-        a = True or False or False
+        #a = (True and False) or (False and True)
+        b = True or True (True or True)
         self.encender_luces_traseras()
 
     def encender_luces_traseras():

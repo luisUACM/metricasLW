@@ -15,12 +15,10 @@ def graficar_complejidad_ciclomatica(metodo: ast.FunctionDef) -> tuple [str, nx.
     lista_decisiones = [n for n in metodo.body if isinstance(n, ast.If) or isinstance(n, ast.While) or isinstance(n, ast.For)]
     lista_asignaciones = [n for n in metodo.body if isinstance(n, ast.Assign)]
     lista_decisiones_compuestas = ma.obtener_decisiones_compuestas(lista_asignaciones)
+    print(lista_decisiones_compuestas)
     for d in lista_decisiones_compuestas:
         lista_decisiones.append(d)
 
-    if metodo.name == 'poner_reversa':
-        #ma.print_node(metodo)
-        print(lista_decisiones)
 
     padre = None
     for d in lista_decisiones:
@@ -32,14 +30,14 @@ def graficar_complejidad_ciclomatica(metodo: ast.FunctionDef) -> tuple [str, nx.
     nx.set_node_attributes(grafica, pos, 'pos')
     return (metodo.name, grafica, 0)
 
-def get_nombre_decision(nodo: ast.AST) -> str:
+def get_nombre_decision(nodo: ast.If | ast.For | ast.While | ast.And | ast.Or) -> str:
     """
     Parámetros: Un nodo ast que represente una decisión en el código. Si no es un nodo de tipo decision regresa una cadena vacia
-    Nodos de decisiones conocidos: ast.If, ast.For, astWhile, ast.BoolOp
     Regresa: Una cadena con el nombre del tipo de nodo
     """
     nombre = ''
     linea = ''
+
     if isinstance(nodo, ast.If):
         linea = str(nodo.lineno)
         nombre = 'If'
@@ -49,16 +47,15 @@ def get_nombre_decision(nodo: ast.AST) -> str:
     elif isinstance(nodo, ast.While):
         linea = str(nodo.lineno)
         nombre = 'While'
-    elif isinstance(nodo, ast.BoolOp):
-        linea = str(nodo.lineno)
-        if isinstance(nodo.op, ast.And):
-            nombre = 'and'
-        elif isinstance(nodo.op, ast.Or):
-            nombre = 'or'
+    elif isinstance(nodo, ast.And):
+        nombre = 'And'
+    elif isinstance(nodo, ast.Or):
+        nombre = 'Or'
     return nombre + ' ' + linea
 
 def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) -> tuple[list, str]:
     """
+    #TODO
     Parámetros: La decisión ast para agregar, la gráfica networkx en donde agregarla y el nombre del nodo padre (en la gráfica) si es que tiene uno
     Regresa: Una tupla con la lista de nodos que no han sido conectados con el final y el nodo que continua con el flujo del programa despues de la decisión.
     Esta es una funcion recursiva que usa esta información de retorno para agregar conexiones a la grafica
@@ -156,26 +153,51 @@ def agregar_decision(decision: ast.AST, grafica: nx.Graph, padre: str = None) ->
         if len(lista_decisiones_hijas) != 0:
             for d in lista_decisiones_hijas:
                 (nodos_fin, ultimo_nodo) = agregar_decision(d, grafica, ultimo_nodo)
-            else:
-                grafica.add_edge(ultimo_nodo, camino_loop)
-                grafica.add_edge(camino_loop, nombre_decision)
+            grafica.add_edge(ultimo_nodo, camino_loop)
+            grafica.add_edge(camino_loop, nombre_decision)
         else:
             #Ciclo
             grafica.add_edge(ultimo_nodo, camino_loop)
             grafica.add_edge(camino_loop, nombre_decision)
             nodos_hoja.append(camino_feliz)
-       
-    elif isinstance(decision, tuple):
-        #Modificar los pythondocs, usar las tuplas
-        if isinstance(decision, ast.Or) or isinstance(decision, ast.And):
-            camino_feliz = get_nombre_decision(decision)
-            camino_else = str(decision.lineno + 1) + ' (F ' + str(decision.lineno) + ')'
-            ultimo_nodo = str(decision.lineno + 1)
 
+    elif isinstance(decision, ast.BoolOp):
+        """
+            camino_feliz = str(asignacion.lineno + 1) + ' (T)'
+            camino_else = str(asignacion.lineno + 1) + ' (F)'
+            fin_decision = str(asignacion.lineno + 1)
+
+            
             grafica.add_edge(nombre_decision, camino_feliz)
             grafica.add_edge(nombre_decision, camino_else)
-            nodos_hoja.append(camino_feliz)
-            nodos_hoja.append(camino_else)
+
+            grafica.add_edge(fin_decision, camino_feliz)
+            grafica.add_edge(fin_decision, camino_else)
+        """
+        ma.print_node(decision)
+        visitante = ma.VisitanteNodos()
+        visitante.visit(decision)
+        lista_descisiones_compuestas = visitante.get_decisiones_compuestas()
+        for d in lista_descisiones_compuestas:
+            nombre_decision += get_nombre_decision(d)
+        nombre_decision = nombre_decision[1:] + str(decision.lineno)
+        fin_decision = str(decision.end_lineno + 1) + ' (' + nombre_decision + ')'
+        if isinstance(decision.op, ast.Or):
+            camino_feliz = str(decision.lineno) + ' (T ' + nombre_decision + ')'
+            camino_else = str(decision.lineno) + ' (F ' + nombre_decision + ')'
+            grafica.add_edge(nombre_decision, camino_feliz)
+            for v in decision.values:
+                if isinstance(v, ast.BoolOp):
+                    (nodos_fin, ultimo_nodo) = agregar_decision(v, grafica, camino_else)
+                else:
+                    if v == decision.values[-1]:
+                        grafica.add_edge(nombre_decision, camino_else)
+                        #Agregar nodos hoja?/nodos fin?
+                        #grafica.add_edge(fin_decision, camino_feliz)
+                        #grafica.add_edge(fin_decision, camino_else)
+        elif isinstance(decision.op, ast.And):
+            pass
+            
     if padre != None:
         grafica.add_edge(padre, nombre_decision)
 
