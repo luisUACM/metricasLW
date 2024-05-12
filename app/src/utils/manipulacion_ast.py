@@ -7,6 +7,7 @@ class VisitanteNodos(ast.NodeVisitor):
         self.lista_atributos = []
         self.lista_decisiones = []
         self.lista_decisiones_compuestas = []
+        self.lista_operaciones_boleanas = []
         super().__init__()
     
     def reset_status(self):
@@ -15,6 +16,7 @@ class VisitanteNodos(ast.NodeVisitor):
         self.lista_atributos = []
         self.lista_decisiones = []
         self.lista_decisiones_compuestas = []
+        self.lista_operaciones_boleanas = []
 
     def visit_Call(self,node):
         self.lista_calls.append(node)
@@ -59,6 +61,10 @@ class VisitanteNodos(ast.NodeVisitor):
         self.lista_decisiones_compuestas.append(node)
         ast.NodeVisitor.generic_visit(self, node)
     
+    def visit_BoolOp(self, node):
+        self.lista_operaciones_boleanas.append(node)
+        ast.NodeVisitor.generic_visit(self, node)
+    
     def get_llamadas(self):
         l = self.lista_calls
         self.reset_status()
@@ -81,6 +87,11 @@ class VisitanteNodos(ast.NodeVisitor):
     
     def get_decisiones_compuestas(self):
         l = self.lista_decisiones_compuestas
+        self.reset_status()
+        return l
+    
+    def get_operaciones_boleanas(self):
+        l = self.lista_operaciones_boleanas
         self.reset_status()
         return l
 
@@ -174,8 +185,7 @@ def busca_funcion(lista_llamadas: list, funcion: ast.FunctionDef) -> bool:
                         return True
     return False
 
-#TODO
-def obtener_decisiones_directas(decision: ast.AST, lista_else: bool = False) -> list[tuple[ast.Assign, ast.Or | ast.And | ast.For | ast.While | ast.If]]:
+def obtener_decisiones_directas(decision: ast.AST, lista_else: bool = False) -> list[ast.For | ast.While | ast.If | ast.BoolOp]:
     """
     Parámetros: Un objeto ast que representa una decision (ast.If | ast.For | ast.While)
     Regresa: una lista con las decisiones que se encuentran en el cuerpo.
@@ -193,16 +203,15 @@ def obtener_decisiones_directas(decision: ast.AST, lista_else: bool = False) -> 
         lista = [n for n in cuerpo if isinstance(n, ast.If) or isinstance(n, ast.While) or isinstance(n, ast.For)]
 
         asignaciones = [n for n in cuerpo if isinstance(n, ast.Assign)]
-        decisiones_compuestas = obtener_decisiones_compuestas(asignaciones)
+        decisiones_compuestas = extraer_operaciones_compuestas(asignaciones)
         for t in decisiones_compuestas:
             lista.append(t)
     return lista
 
-def obtener_decisiones_compuestas(asignaciones: list[ast.Assign]) -> list[tuple[ast.Assign, ast.Or | ast.And]]:
+def extraer_operaciones_compuestas(asignaciones: list[ast.Assign]) -> list[ast.BoolOp]:
     """
-    #TODO
     Parámetros: Una lista de asignaciones ast.Assign
-    Regresa: La lista de objetos ast.Or o ast.And que se encontraban dentro de las asignaciones
+    Regresa: La lista de objetos ast.BoolOp que se encontraban dentro de las asignaciones
     """
     decisiones_compuestas = []
     for a in asignaciones:
