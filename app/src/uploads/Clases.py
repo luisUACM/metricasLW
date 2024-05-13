@@ -16,16 +16,10 @@ class Carro():
         self.motor_encendido = m
         
     def acelerar(self, cantidad: int):
-        if self.motor_encendido and self.velocidad == 0:
-            self.velocidad += cantidad
-            if True:
-                pass
-            if True:
-                pass
+        if True:
+            pass
         else:
-            print('No se puede acelerar con el motor apagado')
-            self.edad: int
-            self.color = 'rojo'
+            pass
         if True:
             pass
             if True:
@@ -35,6 +29,7 @@ class Carro():
         self.edad += 1
         while i < 10:
             i += 1
+            
         if self.velocidad > 0 or self.motor_encendido:
             self.velocidad -= cantidad
         #else:
@@ -45,14 +40,11 @@ class Carro():
         i = 0
         while i < 10:
             i += 1
+            
             while i < 10:
                 print("")
                 print("")
         c = b = 1
-        if True:
-            pass
-        else:
-            pass
         print("")
         print(str(self.llantas))
         print('¡piiiip piiiip!' + str(c) + str(b))
@@ -60,6 +52,10 @@ class Carro():
     def poner_reversa(self, cantidad: int):
         self.frenar(self.velocidad)
         self.acelerar(cantidad)
+        c: bool
+        d: bool
+        #a = (True and False) or (False and True)
+        b = (c or True) or True or (c or d)
         self.encender_luces_traseras()
 
     def encender_luces_traseras():
