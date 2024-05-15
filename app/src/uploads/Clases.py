@@ -32,8 +32,8 @@ class Carro():
             
         if self.velocidad > 0 or self.motor_encendido and True:
             self.velocidad -= cantidad
-        #else:
-        #    print('No se puede frenar con el carro detenido')
+        else:
+            print('No se puede frenar con el carro detenido')
 
     def tocar_claxon(self):
         a:str
@@ -61,5 +61,7 @@ class Carro():
         self.encender_luces_traseras()
 
     def encender_luces_traseras():
+        while True or False and True:
+            pass
         b = 0
         b += 3
