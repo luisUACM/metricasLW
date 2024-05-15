@@ -54,8 +54,8 @@ class Carro():
         self.acelerar(cantidad)
         c: bool
         d: bool
-        #a = (True and False) or (False and True)
-        #b = c or True or (True and True) or (c and d)
+        a = (True and False) or (False and True)
+        b = c or True or (True and True) or (c and d)
         c = c and d or True
         d = False or True
         self.encender_luces_traseras()
@@ -65,3 +65,5 @@ class Carro():
             pass
         b = 0
         b += 3
+
+    

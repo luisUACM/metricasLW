@@ -11,6 +11,7 @@ def graficar_complejidad_ciclomatica(metodo: ast.FunctionDef) -> tuple [str, nx.
     lista_nombres = []
     lista_decisiones_compuestas = []
     lista_asignaciones = []
+    complejidad = 0
 
     lista_decisiones = [n for n in metodo.body if isinstance(n, ast.If) or isinstance(n, ast.While) or isinstance(n, ast.For)]
     lista_asignaciones = [n for n in metodo.body if isinstance(n, ast.Assign)]
@@ -23,10 +24,11 @@ def graficar_complejidad_ciclomatica(metodo: ast.FunctionDef) -> tuple [str, nx.
         nombre_padre = get_nombre_decision(d)
         lista_nombres.append(nombre_padre)
         (i, padre) = agregar_decision(d, grafica, padre)
+    complejidad = grafica.number_of_edges() - grafica.number_of_nodes() + 2
 
     pos = nx.planar_layout(grafica)
     nx.set_node_attributes(grafica, pos, 'pos')
-    return (metodo.name, grafica, 0)
+    return (metodo.name, grafica, complejidad)
 
 def get_nombre_decision(nodo: ast.If | ast.For | ast.While | ast.BoolOp) -> str:
     """
@@ -164,15 +166,18 @@ def agregar_decision(decision: ast.If | ast.For | ast.While | ast.BoolOp, grafic
             grafica.add_edge(padre, nombre_decision)
 
     elif isinstance(decision, ast.While) or isinstance(decision, ast.For):
-        camino_loop = str(decision.end_lineno) + ' (Loop' + str(decision.lineno) +')'
+        camino_loop = str(decision.end_lineno) + ' (Loop ' + str(decision.lineno) +')'
         camino_feliz = str(decision.lineno + 1) + ' (T)'
         fin_decision = str(decision.end_lineno + 1) + ' (End ' + str(decision.lineno) +')'
         lista_decisiones_hijas = ma.obtener_decisiones_directas(decision)
         
         #Caminos True y False
-        if isinstance(decision.test, ast.BoolOp):
-            (nodos_fin, ultimo_nodo) = agregar_decision(decision.test, grafica, nombre_decision, (camino_feliz, fin_decision))
-            nodos_fin = []
+        if isinstance(decision, ast.While):
+            if isinstance(decision.test, ast.BoolOp):
+                (nodos_fin, ultimo_nodo) = agregar_decision(decision.test, grafica, nombre_decision, (camino_feliz, fin_decision))
+                nodos_fin = []
+            else:
+                grafica.add_edge(nombre_decision, camino_feliz)
         else:   
             grafica.add_edge(nombre_decision, camino_feliz)
         grafica.add_edge(nombre_decision, fin_decision)
