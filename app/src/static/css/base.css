@@ -1,6 +1,13 @@
 
-.floating {  
-    animation-name: floating;
+.floating-yellow {  
+    animation-name: floating-yellow;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+}
+
+.floating-blue {  
+    animation-name: floating-blue;
     animation-duration: 3s;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
@@ -25,7 +32,7 @@
     white-space: pre;
 }
 
-  @keyframes floating {
+  @keyframes floating-yellow {
     0% { 
         transform: translate(0,  0px); 
         color: rgb(0, 0, 0);
@@ -33,6 +40,21 @@
     50% { 
         transform: translate(0, 15px);
         color: #ffc107; 
+    }
+    100%   { 
+        transform: translate(0, 0px); 
+        
+    }
+}
+
+@keyframes floating-blue {
+    0% { 
+        transform: translate(0,  0px); 
+        color: rgb(0, 0, 0);
+    }
+    50% { 
+        transform: translate(0, 15px);
+        color: #0cadcd; 
     }
     100%   { 
         transform: translate(0, 0px); 
