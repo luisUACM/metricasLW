@@ -52,10 +52,10 @@ def mccabe():
             N = El número de nodos del grafo
 
 <b>Valores de referencia:</b>
-    - 1-10      --> Programa simple, poco riesgo
-    - 11-20     --> Más complejo, riesgo moderado
-    - 21-50     --> Complejo, alto riesgo
-    - >50       --> Imposible de probar, riesgo altísimo
+    - 1-10\t\t--> Programa simple, poco riesgo
+    - 11-20\t--> Más complejo, riesgo moderado
+    - 21-50\t--> Complejo, alto riesgo
+    - >50\t\t--> Imposible de probar, riesgo altísimo
 
 Para valores de V muy altos sería recomendable refactorizar la lógica del método o seccionar 
 el método y relegar tareas.

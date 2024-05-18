@@ -12,7 +12,15 @@
                 <div class="row gx-4">
                 {% for g in fila %}
                     <div class="col gy-4">
+                        {% if g.2 <= 10 %}
                         <div class="card text-center border-success ps-0 pe-0">
+                        {% elif g.2 <= 20 %}
+                        <div class="card text-center border-info ps-0 pe-0">
+                        {% elif g.2 <= 50 %}
+                        <div class="card text-center border-warning ps-0 pe-0">
+                        {% else %}
+                        <div class="card text-center border-danger ps-0 pe-0">
+                        {% endif %}
                             <div class="card-header fs-3 fw-semibold">{{ g.0 }}</div>
                             <div class="card-body overflow-hidden">
                                 {{ g.1 | safe }}

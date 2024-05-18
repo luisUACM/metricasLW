@@ -27,13 +27,13 @@ class Carro():
     
     def frenar(self, cantidad: int):
         self.edad += 1
-        while i < 10:
-            i += 1
+        #while i < 10:
+        #    i += 1
             
-        if self.velocidad > 0 or self.motor_encendido:
+        if self.velocidad > 0 or self.motor_encendido and True:
             self.velocidad -= cantidad
-        #else:
-        #    print('No se puede frenar con el carro detenido')
+        else:
+            print('No se puede frenar con el carro detenido')
 
     def tocar_claxon(self):
         a:str
@@ -54,102 +54,16 @@ class Carro():
         self.acelerar(cantidad)
         c: bool
         d: bool
-        #a = (True and False) or (False and True)
-        b = (c or True) or True or (c or d)
+        a = (True and False) or (False and True)
+        b = c or True or (True and True) or (c and d)
+        c = c and d or True
+        d = False or True
         self.encender_luces_traseras()
 
     def encender_luces_traseras():
+        while True or False and True:
+            pass
         b = 0
         b += 3
 
-class Carro():
-    velocidad: int
-    motor_encendido: bool
-
-    def encender_motor(self):
-        self.motor_encendido = True
-
-    def acelerar(self, cantidad: int):
-        if self.motor_encendido:
-            self.velocidad += cantidad
-        else:
-            print('No se puede acelerar con el motor apagado')
     
-    def frenar(self, cantidad: int):
-        if self.velocidad > 0:
-            self.velocidad -= cantidad
-        else:
-            print('No se puede frenar con el carro detenido')
-
-    def tocar_claxon():
-        print('¡piiiip piiiip!')
-
-
-class Carro3():
-    velocidad: int
-    motor_encendido: bool
-
-    def encender_motor(self):
-        self.motor_encendido = True
-
-    def acelerar(self, cantidad: int):
-        if self.motor_encendido:
-            self.velocidad += cantidad
-        else:
-            print('No se puede acelerar con el motor apagado')
-    
-    def frenar(self, cantidad: int):
-        if self.velocidad > 0:
-            self.velocidad -= cantidad
-        else:
-            print('No se puede frenar con el carro detenido')
-
-    def tocar_claxon():
-        print('¡piiiip piiiip!')
-
-
-
-class Carro4():
-    velocidad: int
-    motor_encendido: bool
-
-    def encender_motor(self):
-        self.motor_encendido = True
-
-    def acelerar(self, cantidad: int):
-        if self.motor_encendido:
-            self.velocidad += cantidad
-        else:
-            print('No se puede acelerar con el motor apagado')
-    
-    def frenar(self, cantidad: int):
-        if self.velocidad > 0:
-            self.velocidad -= cantidad
-        else:
-            print('No se puede frenar con el carro detenido')
-
-    def tocar_claxon():
-        print('¡piiiip piiiip!')
-
-
-class Carro5():
-    velocidad: int
-    motor_encendido: bool
-
-    def encender_motor(self):
-        self.motor_encendido = True
-
-    def acelerar(self, cantidad: int):
-        if self.motor_encendido:
-            self.velocidad += cantidad
-        else:
-            print('No se puede acelerar con el motor apagado')
-    
-    def frenar(self, cantidad: int):
-        if self.velocidad > 0:
-            self.velocidad -= cantidad
-        else:
-            print('No se puede frenar con el carro detenido')
-
-    def tocar_claxon():
-        print('¡piiiip piiiip!')
