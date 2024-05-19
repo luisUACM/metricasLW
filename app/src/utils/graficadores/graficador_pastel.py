@@ -2,14 +2,14 @@ import plotly.graph_objects as go
 from..metricas import densidad_lineas_duplicadas as dld
 
 def grafico_pastel(duplicados_visitor):
-    # Create a figure with subplots for each class
+    # Crea una figura con subtramas para cada clase.
     fig = go.Figure()
 
-    # Extract the data from the dictionary
+    # Extraer los datos del diccionario.
     lineas_duplicadas = duplicados_visitor['Lineas Duplicadas']
     lineas_unicas = duplicados_visitor['Lineas Únicas']
 
-    # Create a pie chart
+    # Crea el grafico circular
     fig.add_trace(go.Pie(labels=['Lineas Duplicadas', 'Lineas Únicas'],
                          values=[lineas_duplicadas, lineas_unicas]))
 

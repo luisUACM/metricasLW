@@ -23,28 +23,27 @@ def densidad_lineas_duplicadas():
     # Calcula la densidad de líneas de código
     densidad = lineas_duplicadas / lineas_totales * 100
 
-    # Create a dictionary to store the data for the pie chart
+    # Crea un diccionario para almacenar los datos del gráfico circular.
     duplicados_visitor = {
         'Lineas Duplicadas': lineas_duplicadas,
         'Lineas Únicas': lineas_totales - lineas_duplicadas
     }
 
-    # Generate the HTML representation of the plot and append it to the list
+    # Genera la representación HTML del gráfico y añádala a la lista.
    
     plot = grafico_pastel(duplicados_visitor)
     plot_html = plot.to_html(full_html=False)
    
 
-    return render_template('dld.html', title='Densidad de líneas duplicadas', title_long='Densidad de líneas duplicadas', densidad=densidad, descripcion=descripcion, plot_html=plot_html)
+    return render_template('dld.html', title='Densidad de líneas duplicadas', densidad=densidad, descripcion=descripcion, plot_html=plot_html)
 
 
-RUTA_ARCHIVO = app.config['UPLOAD_FOLDER'] + 'Clases.py'
-
-@app.route('/SumatoriaC')
-def sumatoria_c():
+@app.route('/MetodosPonderados')
+def sumatorias_c():
     fig = grafica_lineas(RUTA_ARCHIVO)
     descripcion = '''Para calcular la Metodos ponderados de un programa es necesaria la formula
    MP= Σ.c, resuerda que va de i=1 hasta n, donde n es el numero de metodos por clase'''
+    plot = grafica_lineas(file_path='archivo_especifico.py')
     plot_html = fig.to_html(full_html=False)
 
-    return render_template('mp.html', title='Sumatoria de C', title_long='Metodos Ponderados', descripcion=descripcion ,plot_html=plot_html)
+    return render_template('mp.html', title='Metodos Ponderados', title_long='Metodos Ponderados', descripcion=descripcion ,plot_html=plot_html)
