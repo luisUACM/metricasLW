@@ -1,54 +1,56 @@
-<div class="container">
+<div class="container mb-4">
     <div class="row mt-2">
         <div class="col-4 mx-auto">
-            <table class="table align-middle table-borderless">
-                <thead class="text-center">
-                    <tr class="table-info">
-                        <th class="table-info">Componente</th>
-                        <th class="table-info">Baja</th>
-                        <th class="table-info">Media</th>
-                        <th class="table-info">Alta</th>
+            <div class="card mt-3">
+                <table class="table align-middle table-borderless table-striped mb-0">
+                    <thead class="text-center">
+                        <tr class="table-info fs-5">
+                            <th class="table-info">Componente</th>
+                            <th class="table-info">Baja</th>
+                            <th class="table-info">Media</th>
+                            <th class="table-info">Alta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Entradas Externas</td>
+                            <td>
+                            <input type="number" min="0" name="EIB" class="form-control" id="inputEntradaB" value="0" required>
+                            </td>
+                            <td>
+                            <input type="EIM" class="form-control" id="inputEntradaM" >
+                            </td>
+                            <td>
+                            <input type="EIA" class="form-control" id="inputEntradaA" >
+                            </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Entradas Externas</td>
-                        <td>
-                        <input type="EIB" class="form-control" id="inputEntradaB" >
-                        </td>
-                        <td>
-                        <input type="EIM" class="form-control" id="inputEntradaM" >
-                         </td>
-                         <td>
-                         <input type="EIA" class="form-control" id="inputEntradaA" >
-                         </td>
-                   </tr>
-                    <tr>
-                        <td>Salidas Externas</td>
-                        <td><input type="EOB" class="form-control" id="inputSalidaB" ></td>
-                        <td><input type="EOM" class="form-control" id="inputSalidaM" ></td>
-                        <td><input type="EOA" class="form-control" id="inputSalidaA" ></td>
-                    </tr>
-                    <tr>
-                        <td>Consultas Externas</td>
-                        <td><input type="EQB" class="form-control" id="inputConsultaB" ></td>
-                        <td><input type="EQM" class="form-control" id="inputConsultaM" ></td>
-                        <td><input type="EQA" class="form-control" id="inputConsultaA" ></td>
-                    </tr>
-                    <tr>
-                        <td>Ficheros Logicos Externos</td>
-                        <td><input type="FicheroLB" class="form-control" id="inputFicheroLB" ></td>
-                        <td><input type="FicheroLM" class="form-control" id="inputFicheroLM" ></td>
-                        <td><input type="FicheroLA" class="form-control" id="inputFicheroLA" ></td>
-                    </tr>
-                    <tr>
-                        <td>Ficheros Externos de Interfaz</td>
-                        <td><input type="FicheroEB" class="form-control" id="inputFicheroEB" ></td>
-                        <td><input type="FicheroEM" class="form-control" id="inputFicheroEM" ></td>
-                        <td><input type="FicheroEA" class="form-control" id="inputFicheroEA" ></td>
-                    </tr>
-                </tbody>
-            </table>
+                        <tr>
+                            <td>Salidas Externas</td>
+                            <td><input type="EOB" class="form-control" id="inputSalidaB" ></td>
+                            <td><input type="EOM" class="form-control" id="inputSalidaM" ></td>
+                            <td><input type="EOA" class="form-control" id="inputSalidaA" ></td>
+                        </tr>
+                        <tr>
+                            <td>Consultas Externas</td>
+                            <td><input type="EQB" class="form-control" id="inputConsultaB" ></td>
+                            <td><input type="EQM" class="form-control" id="inputConsultaM" ></td>
+                            <td><input type="EQA" class="form-control" id="inputConsultaA" ></td>
+                        </tr>
+                        <tr>
+                            <td>Ficheros Logicos Externos</td>
+                            <td><input type="FicheroLB" class="form-control" id="inputFicheroLB" ></td>
+                            <td><input type="FicheroLM" class="form-control" id="inputFicheroLM" ></td>
+                            <td><input type="FicheroLA" class="form-control" id="inputFicheroLA" ></td>
+                        </tr>
+                        <tr>
+                            <td>Ficheros Externos de Interfaz</td>
+                            <td><input type="FicheroEB" class="form-control" id="inputFicheroEB" ></td>
+                            <td><input type="FicheroEM" class="form-control" id="inputFicheroEM" ></td>
+                            <td><input type="FicheroEA" class="form-control" id="inputFicheroEA" ></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
