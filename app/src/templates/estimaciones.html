@@ -1,8 +1,56 @@
 {% extends 'base_pf.html'%}
 {% block content %}
-pf = {{ pf }}<br>
-vfa = {{ vfa }}<br>
-esfuerzo = {{ esfuerzo }}<br>
-duracion = {{ duracion }}<br>
-personal = {{ personal }}<br>
+    <div class="container">
+        <div class="row text-center mb-4">
+            <div class="col mx-auto">
+                <h2 class="fw-bold">PF</h2><h5> = {{ pf }}</h5>
+            </div>
+            <div class="col mx-auto">
+                <h2 class="fw-bold">VFA</h2><h5> = {{ vfa }}</h5>
+            </div>
+        </div>
+        <div class="row text-center mb-4">
+            <div class="col">
+                <h2 class="fw-bold">Esfuerzo</h2><h5> = {{ esfuerzo }} horas</h5>
+            </div>
+        </div>
+        <div class="row text-center mb-4">
+            <div class="col">
+                <h2 class="fw-bold">Duración</h2><h5> = {{ duracion }} meses</h5>
+            </div>
+        </div>
+        <div class="row text-center mb-4">
+            <div class="col">
+                <h2 class="fw-bold">Personal</h2><h5> = {{ personal }} desarrolladores</h5>
+            </div>
+        </div>
+        {% block post_estimaciones1 %}
+        <hr/>
+        <div class="container">
+            <div class="row">
+                <h4>Para calcular el costo, ingresar el sueldo de los desarrolladores:</h4>
+            </div>
+            <form action="/Estimaciones2" method="post">
+            {% for fila in range(0, personal) | batch(3) %}
+                <div class="row gx-4 align-items-center justify-content-center">
+                    {% for i in fila %}
+                        <div class="col-auto gy-4">
+                            <label class="col-form-label" for="{{ i + 1 }}">Sueldo mensual #{{ i + 1 }}:</label>
+                        </div>    
+                        <div class="col-auto gy-4">
+                            <input class="form-control" type="number" id="{{ i + 1 }}" name="{{ i + 1 }}" min="0.1" step="0.1" required>
+                        </div>
+                        
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <div class="row mt-4">
+                <div class="col-4 mx-auto text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Calcular</button>
+                </div>
+            </div>
+            </form>
+        </div>
+        {% endblock %}
+    </div>
 {% endblock %}

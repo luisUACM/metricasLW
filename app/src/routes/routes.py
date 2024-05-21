@@ -1,6 +1,6 @@
 from flask import current_app as app
 from flask import render_template, redirect, flash
-from flask import request
+from flask import request, session
 from jinja2 import Template
 import re, py_compile, shutil
 from ..utils.metricas.puntos_funcion import CalculadoraPF
@@ -93,6 +93,19 @@ def estimaciones():
     pf = calculadora.calcular_pfa()
     esfuerzo = calculadora.calcular_esfuerzo()
     duracion = calculadora.calcular_duracion()
+    personal = calculadora.calcular_personal()
+    tupla_esfuerzo = calculadora.get_constantes_esfuerzo()
+
+    session['pfsa'] = pfsa
+    session['caracteristicas'] = caracteristicas
+    session['gsc'] = gsc
+    session['vfa'] = vfa
+    session['pf'] = pf
+    session['esfuerzo'] = esfuerzo
+    session['duracion'] = duracion
+    session['personal'] = personal
+    session['c_esfuerzo'] = tupla_esfuerzo[0]
+    session['e_esfuerzo'] = tupla_esfuerzo[1]
     return render_template('estimaciones.html', 
                            title='Estimaciones', 
                            title_long='Estimaciones mediante Análisis de Puntos de Función', 
@@ -100,7 +113,34 @@ def estimaciones():
                            vfa=vfa,
                            pf=pf,
                            esfuerzo=esfuerzo,
-                           duracion=duracion)
+                           duracion=duracion,
+                           personal=personal)
+
+@app.route('/Estimaciones2', methods=['POST'])
+def estimaciones2():
+    descripcion = renderizar_descripcion_estimaciones2()
+    vfa = session['vfa']
+    pf = session['pf']
+    esfuerzo = session['esfuerzo']
+    duracion = session['duracion']
+    personal = session['personal']
+    calculadora = CalculadoraPF(session['pfsa'], session['gsc'], session['caracteristicas'])
+    sueldo_mes = calcular_sueldo_mes()
+    costo = calculadora.calcular_costo(sueldo_mes)
+    productividad = calculadora.calcular_productividad()
+    velocidad = calculadora.calcular_velocidad()
+    return render_template('estimaciones2.html', 
+                           title='Estimaciones', 
+                           title_long='Estimaciones mediante Análisis de Puntos de Función',
+                           descripcion=descripcion,
+                           vfa=vfa,
+                           pf=pf,
+                           esfuerzo=esfuerzo,
+                           duracion=duracion,
+                           personal=personal,
+                           costo=costo,
+                           productividad=productividad,
+                           velocidad=velocidad)
 
 def renderizar_descripcion_estimaciones1():
     descripcion_string = '''Fórmulas para las estimaciones con Puntos de Función:
@@ -140,6 +180,63 @@ def renderizar_descripcion_estimaciones1():
         e_esfuerzo=tupla_esfuerzo[1],
         c_duracion=tupla_duracion[0],
         e_duracion=tupla_duracion[1]
+    )
+    return descripcion
+
+def renderizar_descripcion_estimaciones2():
+    descripcion_string = '''Fórmulas para las estimaciones con Puntos de Función:
+
+    ■ VFA = 0.65 + 0.01 * sumatoria_GSC\n
+    ■ PF = PFsA * VFA\n
+    ■ Esfuerzo = C_esfuerzo * PF ^ E_esfuerzo\n
+    ■ Duración = C_duración * PF ^ E_duración\n
+    ■ Personal = Esfuerzo / (Duración * 20 * 8)\n
+    ■ Costo = Esfuerzo * Costo_promedio_hora\n
+    ■ Productividad = Esfuerzo / PF\n
+    ■ Velocidad = PF / Duración\n
+
+    Donde:
+
+    - sumatoria_GSC es la sumatoria de las puntuaciones de las características generales del sistema = {{ gsc }}
+    - VFA es factor de ajuste = {{ vfa }}
+    - PFsA son los puntos de función sin ajustar = {{ pfsa }}
+    - PF son los puntos de función ajustados = {{ pf }}
+    - C_esfuerzo es una constante derivada de las caracteristicas del sistema = {{ c_esfuerzo }}
+    - E_esfuerzo es una constante derivada de las caracteristicas del sistema = {{ e_esfuerzo }}
+    - C_duración es una constante derivada de las caracteristicas del sistema = {{ c_duracion }}
+    - E_duración es una constante derivada de las caracteristicas del sistema = {{ c_duracion }}
+    - Costo es el costo total del proyecto = {{ costo }}
+    - Costo_promedio_hora es el costo promedio del proyecto por hora = {{ costo_hora }}
+    - Productividad es la capacidad mínima de trabajo que debe tener un desarrollador del proyecto = {{ productividad }}
+    - Velocidad es la velocidad de entrega de funcionalidades al cliente = {{ velocidad }}
+
+'''
+    calculadora = CalculadoraPF(calcular_pfsa(), calcular_gsc(), obtener_caracteristicas())
+    descripcion_template = Template(descripcion_string)
+    gsc = calcular_gsc()
+    vfa = calculadora.calcular_vfa()
+    pfsa = calcular_pfsa()
+    pf = calculadora.calcular_pfa()
+    tupla_esfuerzo = calculadora.get_constantes_esfuerzo()
+    tupla_duracion = calculadora.get_constantes_duracion()
+    sueldo_mes = calcular_sueldo_mes()
+    costo_hora = calculadora.calcular_costo_hora(sueldo_mes)
+    costo = calculadora.calcular_costo(costo_hora)
+    productividad = calculadora.calcular_productividad()
+    velocidad = calculadora.calcular_velocidad()
+    descripcion = descripcion_template.render(
+        gsc=gsc,
+        vfa=vfa,
+        pfsa=pfsa,
+        pf=pf,
+        c_esfuerzo=tupla_esfuerzo[0],
+        e_esfuerzo=tupla_esfuerzo[1],
+        c_duracion=tupla_duracion[0],
+        e_duracion=tupla_duracion[1],
+        costo=costo,
+        costo_hora=costo_hora,
+        productividad=productividad,
+        velocidad=velocidad
     )
     return descripcion
 
@@ -185,3 +282,12 @@ def obtener_caracteristicas() -> str:
         caracteristicas += '-' + modalidad
 
     return caracteristicas
+
+def calcular_sueldo_mes():
+    """
+    Regresa: El sueldo mensual total de todos los desarrolladores, dadas las entradas del formulario de sueldos.
+    """
+    sueldo_mes = 0
+    for i in range(1, session['personal'] + 1):
+        sueldo_mes += request.form[str(i)]
+    return sueldo_mes

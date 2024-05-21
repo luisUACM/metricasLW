@@ -123,10 +123,10 @@ class CalculadoraPF:
         'Multi-4GL-Nuevo':(11.79, 0.898),
         'Multi-GenAp-Mantenimiento':(11.79, 0.898),
         'Multi-GenAp-Nuevo':(11.79, 0.898) }
-        self.c_esfuerzo = diccionario_esfuerzo[caracteristicas[0]]
-        self.e_esfuerzo = diccionario_esfuerzo[caracteristicas[1]]
-        self.c_duracion = diccionario_duracion[caracteristicas[0]]
-        self.e_duracion = diccionario_duracion[caracteristicas[1]]
+        self.c_esfuerzo = diccionario_esfuerzo[caracteristicas][0]
+        self.e_esfuerzo = diccionario_esfuerzo[caracteristicas][1]
+        self.c_duracion = diccionario_duracion[caracteristicas][0]
+        self.e_duracion = diccionario_duracion[caracteristicas][1]
 
     def calcular_vfa(self) -> float:
         """
@@ -144,7 +144,7 @@ class CalculadoraPF:
         """
         Regresa: El total de esfuerzo necesario para desarrollar el sistema (en horas).
         """
-        return self.c_esfuerzo() * (self.calcular_pfa()) ** self.e_esfuerzo 
+        return self.c_esfuerzo() * (self.calcular_pfa() ** self.e_esfuerzo)
 
     def calcular_duracion(self) -> float:
         """
@@ -158,8 +158,9 @@ class CalculadoraPF:
         """
         pass
 
-    def calcular_costo(self) -> float:
+    def calcular_costo(self, sueldo_mes: float) -> float:
         """
+        Parametros: Una estimación de los sueldos mensuales de todos los desarrolladores del proyecto.
         Regresa: El costo total para desarrollar el sistema (asumiendo un mes de 20 días y una jornada de 8 horas).
         """
         pass
@@ -187,3 +188,11 @@ class CalculadoraPF:
         Regresa: Las constantes C y E para la formula de duración, en forma de tupla
         """
         return (self.c_duracion, self.e_duracion)
+    
+    def calcular_costo_hora(sueldo_mes: float) -> float:
+        """
+        Parametros: Una estimación de los sueldos mensuales de todos los desarrolladores del proyecto.
+        Regresa: El costo de desarrollar el proyecto por hora.
+        """
+        costo_dia = sueldo_mes / 20
+        return costo_dia / 8
