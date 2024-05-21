@@ -147,7 +147,14 @@ def calcular_pfsa() -> int:
     """
     Regresa: El total de puntos de función sin ajustar según fueron ingresados en el formulario de complejidades.
     """
-    return 0
+    pfsa = 0
+    E= ['EI','EO','EQ']
+    Fichero = ['FL','FE']
+    for i in range(1,3):
+        pfsa += int(request.form[E + str(i)])
+    for i in range(1,2):
+        pfsa += int(request.form[Fichero + str(i)])
+    return pfsa
 
 def calcular_gsc() -> int:
     """

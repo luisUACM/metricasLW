@@ -1,7 +1,9 @@
+import ast
 from flask import current_app as app
 from flask import render_template
 from..utils.graficadores.graficador_pastel import grafico_pastel
 from..utils.graficadores.graficador_lineas import grafica_lineas
+from ..utils.metricas.metodoss_ponderados import MetodosClaseVisitor, calcular_suma_de_c
 
 RUTA_ARCHIVO = app.config['UPLOAD_FOLDER'] + 'Clases.py'
 
@@ -35,7 +37,7 @@ def densidad_lineas_duplicadas():
     plot_html = plot.to_html(full_html=False)
    
 
-    return render_template('dld.html', title='Densidad de líneas duplicadas', densidad=densidad, descripcion=descripcion, plot_html=plot_html)
+    return render_template('dld.html', title='Densidad de líneas duplicadas', title_long='Densidad de lineas duplicadas', densidad=densidad, descripcion=descripcion, plot_html=plot_html)
 
 
 @app.route('/MetodosPonderados')
@@ -43,7 +45,15 @@ def sumatorias_c():
     fig = grafica_lineas(RUTA_ARCHIVO)
     descripcion = '''Para calcular la Metodos ponderados de un programa es necesaria la formula
    MP= Σ.c, resuerda que va de i=1 hasta n, donde n es el numero de metodos por clase'''
-    plot = grafica_lineas(file_path='archivo_especifico.py')
+   #Parsea el codigo fuente de python en un ast
+    with open(RUTA_ARCHIVO,'r') as file:
+        source_code = file.read()
+    tree = ast.parse(source_code)
+
+    modulos_clase ={}
+   
+    calcular_suma_de_c(tree, visitor, modulos_clase)
+    #convierte el grafico a html
     plot_html = fig.to_html(full_html=False)
 
-    return render_template('mp.html', title='Metodos Ponderados', title_long='Metodos Ponderados', descripcion=descripcion ,plot_html=plot_html)
+    return render_template('mp.html', title='Metodos Ponderados', title_long='Metodos Ponderados', modulos_clase=modulos_clase, descripcion=descripcion ,plot_html=plot_html)

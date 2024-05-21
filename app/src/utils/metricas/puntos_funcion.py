@@ -138,13 +138,13 @@ class CalculadoraPF:
         """
         Regresa: El total de puntos de función ajustados.
         """
-        pass
+        return self.pfsa * self.calcular_vfa()
 
     def calcular_esfuerzo(self) -> float:
         """
         Regresa: El total de esfuerzo necesario para desarrollar el sistema (en horas).
         """
-        pass
+        return self.c_esfuerzo() * (self.calcular_pfa()) ** self.e_esfuerzo 
 
     def calcular_duracion(self) -> float:
         """
