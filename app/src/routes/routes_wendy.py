@@ -2,7 +2,7 @@ import ast
 from flask import current_app as app
 from flask import render_template
 from..utils.graficadores.graficador_pastel import grafico_pastel
-from..utils.graficadores.graficador_lineas import grafica_lineas
+from..utils.graficadores.graficador_puntos import grafica_puntos
 from ..utils.metricas.metodoss_ponderados import MetodosClaseVisitor, calcular_suma_de_c
 
 RUTA_ARCHIVO = app.config['UPLOAD_FOLDER'] + 'Clases.py'
@@ -42,7 +42,7 @@ def densidad_lineas_duplicadas():
 
 @app.route('/MetodosPonderados')
 def sumatorias_c():
-    fig = grafica_lineas(RUTA_ARCHIVO)
+    fig = grafica_puntos(RUTA_ARCHIVO)
     descripcion = '''Para calcular la Metodos ponderados de un programa es necesaria la formula
    MP= Σ.c, resuerda que va de i=1 hasta n, donde n es el numero de metodos por clase'''
    #Parsea el codigo fuente de python en un ast
@@ -51,7 +51,7 @@ def sumatorias_c():
     tree = ast.parse(source_code)
 
     modulos_clase ={}
-   
+
     calcular_suma_de_c(tree, visitor, modulos_clase)
     #convierte el grafico a html
     plot_html = fig.to_html(full_html=False)

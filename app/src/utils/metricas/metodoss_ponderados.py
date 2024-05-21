@@ -43,11 +43,11 @@ def analizar_archivo(ruta_archivo: str) -> ast.AST:
         print(f"Error: Archivo no encontrado - {ruta_archivo}")
         return None
 
-def calcular_suma_de_c(arbol: ast.AST, visitante: MetodosClaseVisitor) -> None:
-    for i, clase in enumerate(visitante.metodos):
+def calcular_suma_de_c(tree: ast.AST, visitor: MetodosClaseVisitor) -> None:
+    for i, clase in enumerate(visitor.metodos):
         print(f"Sumatoria de C para la clase {clase[0].name}:")
         sumatorias_c = 0
-        for nombre_metodo, complejidad_visitor in visitante.suma_c[i].items():
+        for nombre_metodo, complejidad_visitor in visitor.suma_c[i].items():
             metodo = next((n for n in clase if isinstance(n, ast.FunctionDef) and n.name == nombre_metodo), None)
             if metodo:
                 complejidad_visitor.visit(metodo)
