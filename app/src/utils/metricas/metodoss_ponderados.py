@@ -43,17 +43,19 @@ def analizar_archivo(ruta_archivo: str) -> ast.AST:
         print(f"Error: Archivo no encontrado - {ruta_archivo}")
         return None
 
-def calcular_suma_de_c(tree: ast.AST, visitor: MetodosClaseVisitor) -> None:
-    for i, clase in enumerate(visitor.metodos):
-        print(f"Sumatoria de C para la clase {clase[0].name}:")
+def calcular_suma_de_c(tree: ast.AST, visitor: dict) -> None:
+    visitor_obj = MetodosClaseVisitor()
+    for clase_name, methods in visitor.items():
+        visitor_obj.metodos.append([ast.parse(m).body for m in methods])
         sumatorias_c = 0
-        for nombre_metodo, complejidad_visitor in visitor.suma_c[i].items():
-            metodo = next((n for n in clase if isinstance(n, ast.FunctionDef) and n.name == nombre_metodo), None)
+        for nombre_metodo, complejidad_visitor in visitor[clase_name].items():
+            metodo = next((n for n in visitor_obj.metodos[-1] if isinstance(n, ast.FunctionDef) and n.name == nombre_metodo), None)
             if metodo:
                 complejidad_visitor.visit(metodo)
                 c = calcular_mccabe(complejidad_visitor.complejidad)
                 sumatoria_c += c
-        print(f"    Sumatoria de C: {sumatorias_c}")
+        print(f"Sumatoria de C para la clase {clase_name}:")
+        print(f"    Sumatoria de C: {sumatoria_c}")
 
 def main() -> None:
     ruta_archivo = __file__

@@ -45,14 +45,14 @@ def sumatorias_c():
     fig = grafica_puntos(RUTA_ARCHIVO)
     descripcion = '''Para calcular la Metodos ponderados de un programa es necesaria la formula
    MP= Σ.c, resuerda que va de i=1 hasta n, donde n es el numero de metodos por clase'''
+    
    #Parsea el codigo fuente de python en un ast
     with open(RUTA_ARCHIVO,'r') as file:
-        source_code = file.read()
-    tree = ast.parse(source_code)
-
-    modulos_clase ={}
-
-    calcular_suma_de_c(tree, visitor, modulos_clase)
+        codigo_fuente = file.read()
+    tree = ast.parse(codigo_fuente)
+    modulos_clase = {}
+    calcular_suma_de_c(tree, modulos_clase)
+   
     #convierte el grafico a html
     plot_html = fig.to_html(full_html=False)
 
