@@ -57,3 +57,5 @@ def sumatorias_c():
     plot_html = fig.to_html(full_html=False)
 
     return render_template('mp.html', title='Metodos Ponderados', title_long='Metodos Ponderados', modulos_clase=modulos_clase, descripcion=descripcion ,plot_html=plot_html)
+
+

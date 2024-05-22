@@ -53,9 +53,9 @@ def calcular_suma_de_c(tree: ast.AST, visitor: dict) -> None:
             if metodo:
                 complejidad_visitor.visit(metodo)
                 c = calcular_mccabe(complejidad_visitor.complejidad)
-                sumatoria_c += c
+                sumatorias_c += c
         print(f"Sumatoria de C para la clase {clase_name}:")
-        print(f"    Sumatoria de C: {sumatoria_c}")
+        print(f"    Sumatoria de C: {sumatorias_c}")
 
 def main() -> None:
     ruta_archivo = __file__
