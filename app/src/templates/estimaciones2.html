@@ -4,15 +4,15 @@
 <div class="container">
     <div class="row text-center mb-4">
         <div class="col">
-            <h2 class="fw-bold">Costo</h2><h5> = ${{ costo }}</h5>
+            <h2 class="fw-bold">Costo</h2><h5> = ${{ costo | round(3)}}</h5>
         </div>
     </div>
     <div class="row text-center mb-4">
         <div class="col mx-auto">
-            <h2 class="fw-bold">Productividad</h2><h5> = {{ productividad }} PF / hora</h5>
+            <h2 class="fw-bold">Productividad</h2><h5> = {{ productividad | round(2) }} PF / hora</h5>
         </div>
         <div class="col mx-auto">
-            <h2 class="fw-bold">Velocidad</h2><h5> = {{ velocidad }} PF / mes</h5>
+            <h2 class="fw-bold">Velocidad</h2><h5> = {{ velocidad | round(2) }} PF / mes</h5>
         </div>
     </div>
 </div>

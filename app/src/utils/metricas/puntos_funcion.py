@@ -1,3 +1,5 @@
+import math
+
 class CalculadoraPF:
     def __init__(self, pfsa: float, gsc: int, caracteristicas: str) -> None:
         self.pfsa = pfsa
@@ -144,38 +146,41 @@ class CalculadoraPF:
         """
         Regresa: El total de esfuerzo necesario para desarrollar el sistema (en horas).
         """
-        return self.c_esfuerzo() * (self.calcular_pfa() ** self.e_esfuerzo)
+        return self.c_esfuerzo * (self.calcular_pfa() ** self.e_esfuerzo)
 
     def calcular_duracion(self) -> float:
         """
         Regresa: El total de tiempo necesario para desarrollar el sistema, expresada en meses.
         """
-        pass
+        if self.c_duracion == 0.411 and self.e_duracion == 0.328:
+            return self.c_duracion * (self.calcular_esfuerzo() ** self.e_duracion)
+        else:
+            return self.c_duracion * (self.calcular_pfa() ** self.e_duracion)
 
     def calcular_personal(self) -> int:
         """
         Regresa: El personal necesario para desarrollar el sistema (redondeado).
         """
-        pass
+        return math.ceil(self.calcular_esfuerzo() / (self.calcular_duracion() * 20 * 8))
 
     def calcular_costo(self, sueldo_mes: float) -> float:
         """
         Parametros: Una estimación de los sueldos mensuales de todos los desarrolladores del proyecto.
         Regresa: El costo total para desarrollar el sistema (asumiendo un mes de 20 días y una jornada de 8 horas).
         """
-        pass
+        return self.calcular_esfuerzo() * self.calcular_costo_hora(sueldo_mes)
 
     def calcular_productividad(self) -> float:
         """
         Regresa: La productividad mínima que un desarrollador debe tener para completar el proyecto, expresada en puntos de función por hora.
         """
-        pass
+        return self.calcular_esfuerzo() / self.calcular_pfa()
 
     def calcular_velocidad(self) -> float:
         """
         Regresa: La velocidad de entrega del proyecto, expresada en puntos de función por mes.
         """
-        pass
+        return self.calcular_pfa() / self.calcular_duracion()
 
     def get_constantes_esfuerzo(self) -> tuple[float, float]:
         """
@@ -189,7 +194,7 @@ class CalculadoraPF:
         """
         return (self.c_duracion, self.e_duracion)
     
-    def calcular_costo_hora(sueldo_mes: float) -> float:
+    def calcular_costo_hora(self, sueldo_mes: float) -> float:
         """
         Parametros: Una estimación de los sueldos mensuales de todos los desarrolladores del proyecto.
         Regresa: El costo de desarrollar el proyecto por hora.

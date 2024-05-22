@@ -3,20 +3,20 @@
     <div class="container">
         <div class="row text-center mb-4">
             <div class="col mx-auto">
-                <h2 class="fw-bold">PF</h2><h5> = {{ pf }}</h5>
+                <h2 class="fw-bold">PF</h2><h5> = {{ pf | round(2) }}</h5>
             </div>
             <div class="col mx-auto">
-                <h2 class="fw-bold">VFA</h2><h5> = {{ vfa }}</h5>
+                <h2 class="fw-bold">VFA</h2><h5> = {{ vfa | round(2) }}</h5>
             </div>
         </div>
         <div class="row text-center mb-4">
             <div class="col">
-                <h2 class="fw-bold">Esfuerzo</h2><h5> = {{ esfuerzo }} horas</h5>
+                <h2 class="fw-bold">Esfuerzo</h2><h5> = {{ esfuerzo | round(2) }} horas</h5>
             </div>
         </div>
         <div class="row text-center mb-4">
             <div class="col">
-                <h2 class="fw-bold">Duración</h2><h5> = {{ duracion }} meses</h5>
+                <h2 class="fw-bold">Duración</h2><h5> = {{ duracion | round(2) }} meses</h5>
             </div>
         </div>
         <div class="row text-center mb-4">

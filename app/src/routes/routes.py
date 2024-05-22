@@ -148,26 +148,38 @@ def renderizar_descripcion_estimaciones1():
     ■ VFA = 0.65 + 0.01 * sumatoria_GSC\n
     ■ PF = PFsA * VFA\n
     ■ Esfuerzo = C_esfuerzo * PF ^ E_esfuerzo\n
-    ■ Duración = C_duración * PF ^ E_duración\n
+   ■ Duración = C_duración * PF ^ E_duración
+            Si las características del sistema es alguna de las siguientes combinaciones:
+                - PC
+                - Multi
+                - 4GL
+                - Nuevo
+                - PC-4GL
+                - Multi-4GL
+                - PC-4GL-Nuevo
+                - Multi-4GL-Nuevo\n
+    ■ Duración = C_duración * Esfuerzo ^ E_duración
+            Si las características del sistema es aluguna combinación fuera de la lista anterior.\n
     ■ Personal = Esfuerzo / (Duración * 20 * 8)\n
 
     Donde:
 
     - sumatoria_GSC es la sumatoria de las puntuaciones de las características generales del sistema = {{ gsc }}
-    - VFA es factor de ajuste = {{ vfa }}
+    - VFA es factor de ajuste = {{ vfa | round(2) }}
     - PFsA son los puntos de función sin ajustar = {{ pfsa }}
-    - PF son los puntos de función ajustados = {{ pf }}
+    - PF son los puntos de función ajustados = {{ pf | round(2) }}
     - C_esfuerzo es una constante derivada de las caracteristicas del sistema = {{ c_esfuerzo }}
     - E_esfuerzo es una constante derivada de las caracteristicas del sistema = {{ e_esfuerzo }}
     - C_duración es una constante derivada de las caracteristicas del sistema = {{ c_duracion }}
-    - E_duración es una constante derivada de las caracteristicas del sistema = {{ c_duracion }}
+    - E_duración es una constante derivada de las caracteristicas del sistema = {{ e_duracion }}
 
 '''
-    calculadora = CalculadoraPF(calcular_pfsa(), calcular_gsc(), obtener_caracteristicas())
+    
     descripcion_template = Template(descripcion_string)
     gsc = calcular_gsc()
-    vfa = calculadora.calcular_vfa()
     pfsa = calcular_pfsa()
+    calculadora = CalculadoraPF(pfsa, gsc, obtener_caracteristicas())
+    vfa = calculadora.calcular_vfa()
     pf = calculadora.calcular_pfa()
     tupla_esfuerzo = calculadora.get_constantes_esfuerzo()
     tupla_duracion = calculadora.get_constantes_duracion()
@@ -189,7 +201,18 @@ def renderizar_descripcion_estimaciones2():
     ■ VFA = 0.65 + 0.01 * sumatoria_GSC\n
     ■ PF = PFsA * VFA\n
     ■ Esfuerzo = C_esfuerzo * PF ^ E_esfuerzo\n
-    ■ Duración = C_duración * PF ^ E_duración\n
+    ■ Duración = C_duración * PF ^ E_duración
+            Si las características del sistema es alguna de las siguientes combinaciones:
+                - PC
+                - Multi
+                - 4GL
+                - Nuevo
+                - PC-4GL
+                - Multi-4GL
+                - PC-4GL-Nuevo
+                - Multi-4GL-Nuevo\n
+    ■ Duración = C_duración * Esfuerzo ^ E_duración
+            Si las características del sistema es aluguna combinación fuera de la lista anterior.\n
     ■ Personal = Esfuerzo / (Duración * 20 * 8)\n
     ■ Costo = Esfuerzo * Costo_promedio_hora\n
     ■ Productividad = Esfuerzo / PF\n
@@ -198,30 +221,31 @@ def renderizar_descripcion_estimaciones2():
     Donde:
 
     - sumatoria_GSC es la sumatoria de las puntuaciones de las características generales del sistema = {{ gsc }}
-    - VFA es factor de ajuste = {{ vfa }}
+    - VFA es factor de ajuste = {{ vfa | round(2) }}
     - PFsA son los puntos de función sin ajustar = {{ pfsa }}
-    - PF son los puntos de función ajustados = {{ pf }}
+    - PF son los puntos de función ajustados = {{ pf | round(2) }}
     - C_esfuerzo es una constante derivada de las caracteristicas del sistema = {{ c_esfuerzo }}
     - E_esfuerzo es una constante derivada de las caracteristicas del sistema = {{ e_esfuerzo }}
     - C_duración es una constante derivada de las caracteristicas del sistema = {{ c_duracion }}
-    - E_duración es una constante derivada de las caracteristicas del sistema = {{ c_duracion }}
-    - Costo es el costo total del proyecto = {{ costo }}
-    - Costo_promedio_hora es el costo promedio del proyecto por hora = {{ costo_hora }}
-    - Productividad es la capacidad mínima de trabajo que debe tener un desarrollador del proyecto = {{ productividad }}
-    - Velocidad es la velocidad de entrega de funcionalidades al cliente = {{ velocidad }}
+    - E_duración es una constante derivada de las caracteristicas del sistema = {{ e_duracion }}
+    - Costo es el costo total del proyecto = {{ costo | round(3) }}
+    - Costo_promedio_hora es el costo promedio del proyecto por hora = {{ costo_hora | round(3) }}
+    - Productividad es la capacidad mínima de trabajo que debe tener un desarrollador del proyecto = {{ productividad | round(2) }}
+    - Velocidad es la velocidad de entrega de funcionalidades al cliente = {{ velocidad | round(2) }}
 
 '''
-    calculadora = CalculadoraPF(calcular_pfsa(), calcular_gsc(), obtener_caracteristicas())
+    
     descripcion_template = Template(descripcion_string)
-    gsc = calcular_gsc()
+    gsc = session['gsc']
+    pfsa = session['pfsa']
+    calculadora = CalculadoraPF(pfsa, gsc, session['caracteristicas'])
     vfa = calculadora.calcular_vfa()
-    pfsa = calcular_pfsa()
     pf = calculadora.calcular_pfa()
     tupla_esfuerzo = calculadora.get_constantes_esfuerzo()
     tupla_duracion = calculadora.get_constantes_duracion()
     sueldo_mes = calcular_sueldo_mes()
     costo_hora = calculadora.calcular_costo_hora(sueldo_mes)
-    costo = calculadora.calcular_costo(costo_hora)
+    costo = calculadora.calcular_costo(sueldo_mes)
     productividad = calculadora.calcular_productividad()
     velocidad = calculadora.calcular_velocidad()
     descripcion = descripcion_template.render(
@@ -245,12 +269,20 @@ def calcular_pfsa() -> int:
     Regresa: El total de puntos de función sin ajustar según fueron ingresados en el formulario de complejidades.
     """
     pfsa = 0
-    E= ['EI','EO','EQ']
-    Fichero = ['FL','FE']
-    for i in range(1,3):
-        pfsa += int(request.form[E + str(i)])
-    for i in range(1,2):
-        pfsa += int(request.form[Fichero + str(i)])
+    input = [['EI1','EI2','EI3'],
+             ['EO1','EO2','EO3'],
+             ['EQ1','EQ2','EQ3'],
+             ['FicheroI1','FicheroI2', 'FicheroI3'],
+             ['FicheroE1','FicheroE2', 'FicheroE3']]
+    multiplicador = [[3, 4, 6],
+                     [4, 5, 7],
+                     [3, 4, 6],
+                     [7, 10, 15],
+                     [5, 7, 10]]
+    for i in range(0, 5):
+        for j in range(0, 3):
+            val = int(request.form[input[i][j]]) * multiplicador[i][j]
+            pfsa += val
     return pfsa
 
 def calcular_gsc() -> int:
@@ -259,7 +291,7 @@ def calcular_gsc() -> int:
     """
     gsc = 0
     att = 'att'
-    for i in range(1,14):
+    for i in range(1,15):
         gsc += int(request.form[att + str(i)])
     return gsc
 
@@ -283,11 +315,11 @@ def obtener_caracteristicas() -> str:
 
     return caracteristicas
 
-def calcular_sueldo_mes():
+def calcular_sueldo_mes() -> float:
     """
     Regresa: El sueldo mensual total de todos los desarrolladores, dadas las entradas del formulario de sueldos.
     """
     sueldo_mes = 0
     for i in range(1, session['personal'] + 1):
-        sueldo_mes += request.form[str(i)]
+        sueldo_mes += float(request.form[str(i)])
     return sueldo_mes
