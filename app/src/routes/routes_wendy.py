@@ -19,8 +19,16 @@ def densidad_lineas_duplicadas():
         contenido = file.read()
     lineas_totales = len(contenido.splitlines())
     lineas_duplicadas = dld(contenido)
-    descripcion = '''Para calcular la Densidad de lineas de un programa es necesaria la formula
-    X = Lineas Duplicadas/Lineas totales * 100, aqui mostramos que no toma las lineas en blanco '''
+    descripcion = '''Para calcular la Densidad de Líneas Duplicadas (X) de un programa es necesaria la siguiente formula:
+
+    X = Líneas Duplicadas/Líneas totales * 100
+    
+    Donde: 
+        Líneas totales cuentan todas la líneas físicas (aquellas que incluyen código y no solo espacios en blanco)
+        Líneas Duplicadas son las líneas de código que son idénticas a otras.
+
+Es recomendable mantener el índice de Densidad de Líneas Duplicadas debajo de un 5%
+    '''
 
     # Calcula la densidad de líneas de código
     densidad = lineas_duplicadas / lineas_totales * 100
@@ -37,14 +45,22 @@ def densidad_lineas_duplicadas():
     plot_html = plot.to_html(full_html=False)
    
 
-    return render_template('dld.html', title='Densidad de líneas duplicadas', title_long='Densidad de lineas duplicadas', densidad=densidad, descripcion=descripcion, plot_html=plot_html)
+    return render_template('dld.html', title='Densidad de líneas duplicadas', title_long='Densidad de líneas duplicadas', densidad=densidad, descripcion=descripcion, plot_html=plot_html)
 
 
 @app.route('/MetodosPonderados')
 def sumatorias_c():
     fig = grafica_puntos(RUTA_ARCHIVO)
-    descripcion = '''Para calcular la Metodos ponderados de un programa es necesaria la formula
-   MP= Σ.c, resuerda que va de i=1 hasta n, donde n es el numero de metodos por clase'''
+    descripcion = '''Para calcular la Métodos ponderados de un programa es necesaria la fórmula:
+
+    MP= Σci
+    
+    Donde:
+        c es la complejidad ciclomática
+        1 <= i <= n con n el número de métodos por clase
+
+Entre más grande MP, más compleja la clase y más dificil de mantener. 
+En estos casos es recomendable reestructurar la clase en clases más pequeñas'''
     
    #Parsea el codigo fuente de python en un ast
     with open(RUTA_ARCHIVO,'r') as file:
