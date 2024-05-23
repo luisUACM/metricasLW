@@ -1,5 +1,3 @@
-import math
-
 class CalculadoraPF:
     def __init__(self, pfsa: float, gsc: int, caracteristicas: str) -> None:
         self.pfsa = pfsa
@@ -157,11 +155,11 @@ class CalculadoraPF:
         else:
             return self.c_duracion * (self.calcular_pfa() ** self.e_duracion)
 
-    def calcular_personal(self) -> int:
+    def calcular_personal(self) -> float:
         """
         Regresa: El personal necesario para desarrollar el sistema (redondeado).
         """
-        return math.ceil(self.calcular_esfuerzo() / (self.calcular_duracion() * 20 * 8))
+        return self.calcular_esfuerzo() / (self.calcular_duracion() * 20 * 8)
 
     def calcular_costo(self, sueldo_mes: float) -> float:
         """

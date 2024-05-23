@@ -2,7 +2,7 @@ from flask import current_app as app
 from flask import render_template, redirect, flash
 from flask import request, session
 from jinja2 import Template
-import re, py_compile, shutil
+import re, py_compile, shutil, math
 from ..utils.metricas.puntos_funcion import CalculadoraPF
 
 @app.route('/')
@@ -172,6 +172,7 @@ def renderizar_descripcion_estimaciones1():
     - E_esfuerzo es una constante derivada de las caracteristicas del sistema = {{ e_esfuerzo }}
     - C_duración es una constante derivada de las caracteristicas del sistema = {{ c_duracion }}
     - E_duración es una constante derivada de las caracteristicas del sistema = {{ e_duracion }}
+    - Personal es la cantidad de desarrolladores que se necesitan para el proyecto = {{ personal | round(1) }}
 
 '''
     
@@ -183,6 +184,7 @@ def renderizar_descripcion_estimaciones1():
     pf = calculadora.calcular_pfa()
     tupla_esfuerzo = calculadora.get_constantes_esfuerzo()
     tupla_duracion = calculadora.get_constantes_duracion()
+    personal = calculadora.calcular_personal()
     descripcion = descripcion_template.render(
         gsc=gsc,
         vfa=vfa,
@@ -191,7 +193,8 @@ def renderizar_descripcion_estimaciones1():
         c_esfuerzo=tupla_esfuerzo[0],
         e_esfuerzo=tupla_esfuerzo[1],
         c_duracion=tupla_duracion[0],
-        e_duracion=tupla_duracion[1]
+        e_duracion=tupla_duracion[1],
+        personal=personal
     )
     return descripcion
 
@@ -228,6 +231,7 @@ def renderizar_descripcion_estimaciones2():
     - E_esfuerzo es una constante derivada de las caracteristicas del sistema = {{ e_esfuerzo }}
     - C_duración es una constante derivada de las caracteristicas del sistema = {{ c_duracion }}
     - E_duración es una constante derivada de las caracteristicas del sistema = {{ e_duracion }}
+    - Personal es la cantidad de desarrolladores que se necesitan para el proyecto = {{ personal | round(1) }}
     - Costo es el costo total del proyecto = {{ costo | round(3) }}
     - Costo_promedio_hora es el costo promedio del proyecto por hora = {{ costo_hora | round(3) }}
     - Productividad es la capacidad mínima de trabajo que debe tener un desarrollador del proyecto = {{ productividad | round(2) }}
@@ -243,6 +247,7 @@ def renderizar_descripcion_estimaciones2():
     pf = calculadora.calcular_pfa()
     tupla_esfuerzo = calculadora.get_constantes_esfuerzo()
     tupla_duracion = calculadora.get_constantes_duracion()
+    personal = calculadora.calcular_personal()
     sueldo_mes = calcular_sueldo_mes()
     costo_hora = calculadora.calcular_costo_hora(sueldo_mes)
     costo = calculadora.calcular_costo(sueldo_mes)
@@ -257,6 +262,7 @@ def renderizar_descripcion_estimaciones2():
         e_esfuerzo=tupla_esfuerzo[1],
         c_duracion=tupla_duracion[0],
         e_duracion=tupla_duracion[1],
+        personal=personal,
         costo=costo,
         costo_hora=costo_hora,
         productividad=productividad,
@@ -320,6 +326,6 @@ def calcular_sueldo_mes() -> float:
     Regresa: El sueldo mensual total de todos los desarrolladores, dadas las entradas del formulario de sueldos.
     """
     sueldo_mes = 0
-    for i in range(1, session['personal'] + 1):
+    for i in range(1, math.ceil(session['personal']) + 1):
         sueldo_mes += float(request.form[str(i)])
     return sueldo_mes

@@ -21,7 +21,7 @@
         </div>
         <div class="row text-center mb-4">
             <div class="col">
-                <h2 class="fw-bold">Personal</h2><h5> = {{ personal }} desarrolladores</h5>
+                <h2 class="fw-bold">Personal</h2><h5> = {{ personal | round(1)}} desarrolladores</h5>
             </div>
         </div>
         {% block post_estimaciones1 %}
@@ -31,7 +31,7 @@
                 <h4>Para calcular el costo, ingresar el sueldo de los desarrolladores:</h4>
             </div>
             <form action="/Estimaciones2" method="post">
-            {% for fila in range(0, personal) | batch(3) %}
+            {% for fila in range(0, (personal // 1 + (personal % 1 > 0)) | int ) | batch(3) %}
                 <div class="row gx-4 align-items-center justify-content-center">
                     {% for i in fila %}
                         <div class="col-auto gy-4">
