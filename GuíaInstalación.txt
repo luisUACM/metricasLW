@@ -1,0 +1,57 @@
+Windows 10 o Windows 11
+	
+	Instalación
+
+	Para la instalación del Analizador de Clases LW es necesario tener Python instalado y la variable de entorno PATH configurada con Python, si no se tiene instalar python y marcar la casilla de agregar Python a la variable PATH, desde: https://www.python.org/downloads
+		1 - Descargar el repositorio del proyecto en una carpeta .zip desde: https://github.com/luisUACM/metricasLW
+		2 - Descomprimir la carpeta
+		3 - Abrir una terminal cmd y escribir los siguientes comandos:
+			■ cd .../metricasLW-master
+			Sustituyendo "..." por la ruta hacia la carpeta descomprimida metricasLW-master
+			■ python -m venv venv
+			■ python.exe -m pip install --upgrade pip
+			■ cd venv/Scripts
+			■ activate
+			■ cd ..
+			■ cd ..
+			■ pip install -r requirements.txt
+		4 - Cerrar la terminal.
+		
+	Ejecución
+	
+		Para ejecutar el programa se requiere tener instalado un navegador, puedes descargar Google Chrome desde: https://www.google.com/intl/es-419/chrome/
+		1 - Abrir una terminal cmd y escribir los siguientes comandos:
+			■ cd .../metricasLW-master
+			Sustituyendo "..." por la ruta hacia la carpeta descomprimida metricasLW
+			■ cd venv/Scripts
+			■ activate
+			■ cd ..
+			■ cd ..
+			■ python app/wsgi.py
+		2 - Accede a la url: http://127.0.0.1:5000/inicio en el navegador.
+		Para terminar la ejecución del programa escribir en la terminal:
+			■ cd venv/Scripts
+			■ deactivate
+		Cerrar la terminal.
+
+Linux 
+
+	Instalación
+	
+		Para la instalación del Analizador de Clases LW es necesario tener instalado los entornos virtuales de python, si no está instalado, escribir el siguiente comando en una terminal: sudo apt install python3.10-venv
+		
+		1 - Abrir una terminal y escribir los siguientes comandos:
+			■ cd .../metricasLW
+			■ python3 -m venv venv
+			■ source venv/bin/activate
+			■ pip install --upgrade pip
+			■ pip install -r requirements.txt
+
+	Ejecución
+	
+		1 - Abrir una terminal y escribir los siguientes comandos (si se acaba de realizar la instalación, usar la misma consola y omitir los primeros 2 comandos):
+			■ cd .../metricasLW
+			■ source venv/bin/activate
+			■ python3 app/wsgi.py
+		
+		Para terminar la ejecución del programa sólo cierra la consola.
